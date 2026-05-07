@@ -1,6 +1,6 @@
-const { useState, useEffect } = React;
+const { useState } = React;
 
-// Icons component wrapper
+// Simple icon component
 const Icon = ({ name, size = 20, className = "" }) => {
     const icons = {
         LayoutDashboard: lucide.LayoutDashboard,
@@ -18,7 +18,6 @@ const Icon = ({ name, size = 20, className = "" }) => {
         Flame: lucide.Flame,
         Clock: lucide.Clock,
         Filter: lucide.Filter,
-        MoreHorizontal: lucide.MoreHorizontal,
         ArrowUpRight: lucide.ArrowUpRight,
         Activity: lucide.Activity,
         GasPump: lucide.GasPump,
@@ -30,7 +29,7 @@ const Icon = ({ name, size = 20, className = "" }) => {
     return <IconComponent size={size} className={className} />;
 };
 
-// Mock Data
+// Data
 const kpiData = [
     { label: 'Total Earned', value: '$12,450', change: '+23%', icon: 'DollarSign', positive: true },
     { label: 'Gas Spent', value: '$1,280', change: '-5%', icon: 'GasPump', positive: true },
@@ -39,20 +38,20 @@ const kpiData = [
 ];
 
 const todayTasks = [
-    { id: 1, title: 'Swap on zkSync Era', protocol: 'SyncSwap', difficulty: 'Easy', reward: 'High', completed: false, link: '#' },
-    { id: 2, title: 'Bridge to Base', protocol: 'Across', difficulty: 'Medium', reward: 'Medium', completed: true, link: '#' },
-    { id: 3, title: 'Stake ETH on EigenLayer', protocol: 'EigenLayer', difficulty: 'Hard', reward: 'Very High', completed: false, link: '#' },
-    { id: 4, title: 'Mint NFT on Scroll', protocol: 'Scroll', difficulty: 'Easy', reward: 'Low', completed: false, link: '#' },
-    { id: 5, title: 'Provide LP on Arbitrum', protocol: 'Camelot', difficulty: 'Medium', reward: 'High', completed: false, link: '#' }
+    { id: 1, title: 'Swap on zkSync Era', protocol: 'SyncSwap', difficulty: 'Easy', reward: 'High', completed: false },
+    { id: 2, title: 'Bridge to Base', protocol: 'Across', difficulty: 'Medium', reward: 'Medium', completed: true },
+    { id: 3, title: 'Stake ETH on EigenLayer', protocol: 'EigenLayer', difficulty: 'Hard', reward: 'Very High', completed: false },
+    { id: 4, title: 'Mint NFT on Scroll', protocol: 'Scroll', difficulty: 'Easy', reward: 'Low', completed: false },
+    { id: 5, title: 'Provide LP on Arbitrum', protocol: 'Camelot', difficulty: 'Medium', reward: 'High', completed: false }
 ];
 
 const opportunities = [
-    { id: 1, name: 'LayerZero', chain: 'Multi', stage: 'Early', score: 9.2, funding: '$263M', effort: 'Medium', category: 'Bridge' },
-    { id: 2, name: 'zkSync', chain: 'zkSync', stage: 'Mid', score: 8.8, funding: '$458M', effort: 'High', category: 'L2' },
-    { id: 3, name: 'StarkNet', chain: 'StarkNet', stage: 'Late', score: 7.5, funding: '$282M', effort: 'Low', category: 'L2' },
-    { id: 4, name: 'Base', chain: 'Base', stage: 'Early', score: 8.9, funding: 'Coinbase', effort: 'Medium', category: 'L2' },
-    { id: 5, name: 'Linea', chain: 'Linea', stage: 'Early', score: 8.1, funding: '$726M', effort: 'High', category: 'L2' },
-    { id: 6, name: 'Scroll', chain: 'Scroll', stage: 'Mid', score: 7.8, funding: '$80M', effort: 'Medium', category: 'L2' }
+    { id: 1, name: 'LayerZero', chain: 'Multi', stage: 'Early', score: 9.2, funding: '$263M', effort: 'Medium' },
+    { id: 2, name: 'zkSync', chain: 'zkSync', stage: 'Mid', score: 8.8, funding: '$458M', effort: 'High' },
+    { id: 3, name: 'StarkNet', chain: 'StarkNet', stage: 'Late', score: 7.5, funding: '$282M', effort: 'Low' },
+    { id: 4, name: 'Base', chain: 'Base', stage: 'Early', score: 8.9, funding: 'Coinbase', effort: 'Medium' },
+    { id: 5, name: 'Linea', chain: 'Linea', stage: 'Early', score: 8.1, funding: '$726M', effort: 'High' },
+    { id: 6, name: 'Scroll', chain: 'Scroll', stage: 'Mid', score: 7.8, funding: '$80M', effort: 'Medium' }
 ];
 
 const wallets = [
@@ -62,121 +61,118 @@ const wallets = [
 ];
 
 // Components
-const SidebarItem = ({ icon, label, active, onClick }) => (
-    <button onClick={onClick}
-        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${active ? 'bg-[#1A2235] text-[#FFD700] border-l-2 border-[#FFD700]' : 'text-gray-400 hover:bg-[#1A2235]/50 hover:text-gray-200'}`}>
-        <Icon name={icon} size={20} className={active ? 'text-[#FFD700]' : 'group-hover:text-gray-200'} />
-        <span className="font-medium text-sm">{label}</span>
-        {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#FFD700]" />}
-    </button>
-);
-
-const SidebarSection = ({ title, children }) => (
-    <div className="mb-6">
-        <h3 className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{title}</h3>
-        <div className="space-y-1">{children}</div>
-    </div>
-);
-
-const KPICard = ({ label, value, change, icon, positive }) => (
-    <div className="bg-[#121826] rounded-2xl p-6 border border-[#1E293B] hover:border-[#FFD700]/30 transition-all duration-300 hover:shadow-lg hover:shadow-[#FFD700]/5">
-        <div className="flex justify-between items-start mb-4">
-            <div className="p-3 rounded-xl bg-[#0B0F1A] border border-[#1E293B]">
-                <Icon name={icon} size={20} className="text-[#FFD700]" />
-            </div>
-            <span className={`text-xs font-semibold px-2 py-1 rounded-full ${positive ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
-                {change}
-            </span>
-        </div>
-        <h3 className="text-2xl font-bold text-white mb-1">{value}</h3>
-        <p className="text-sm text-gray-400">{label}</p>
-    </div>
-);
-
-const TaskItem = ({ task, onToggle }) => (
-    <div className={`group flex items-center gap-4 p-4 rounded-xl border border-[#1E293B] hover:bg-[#1A2235]/50 transition-all duration-200 ${task.completed ? 'opacity-60' : ''}`}>
-        <button onClick={() => onToggle(task.id)}
-            className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${task.completed ? 'bg-[#FFD700] border-[#FFD700] text-black' : 'border-gray-600 hover:border-[#FFD700]'}`}>
-            {task.completed && <Icon name="CheckSquare" size={14} />}
+function SidebarItem({ icon, label, active, onClick }) {
+    return (
+        <button onClick={onClick}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${active ? 'bg-[#1A2235] text-[#FFD700] border-l-2 border-[#FFD700]' : 'text-gray-400 hover:bg-[#1A2235]/50 hover:text-gray-200'}`}>
+            <Icon name={icon} size={20} />
+            <span className="font-medium text-sm">{label}</span>
+            {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#FFD700]" />}
         </button>
-        <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-                <h4 className={`font-semibold ${task.completed ? 'line-through text-gray-500' : 'text-gray-100'}`}>{task.title}</h4>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-[#1A2235] text-gray-400 border border-[#2D3748]">{task.protocol}</span>
-            </div>
-            <div className="flex items-center gap-3 text-xs text-gray-500">
-                <span className="flex items-center gap-1"><Icon name="Zap" size={12} /> {task.difficulty}</span>
-                <span className="flex items-center gap-1"><Icon name="Award" size={12} /> {task.reward}</span>
-            </div>
-        </div>
-        <a href={task.link}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${task.completed ? 'bg-[#1A2235] text-gray-500 cursor-default' : 'bg-[#FFD700] text-black hover:bg-[#E6C200]'}`}
-            onClick={(e) => task.completed && e.preventDefault()}>
-            {task.completed ? 'Done' : 'Go'}
-            {!task.completed && <Icon name="ExternalLink" size={14} />}
-        </a>
-    </div>
-);
+    );
+}
 
-const OpportunityCard = ({ opp }) => (
-    <div className="bg-[#121826] rounded-2xl p-6 border border-[#1E293B] hover:border-[#FFD700]/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50 group cursor-pointer">
-        <div className="flex justify-between items-start mb-4">
-            <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FFD700]/20 to-[#FFD700]/5 border border-[#FFD700]/20 flex items-center justify-center text-[#FFD700] font-bold text-lg">
-                    {opp.name[0]}
+function KPICard({ label, value, change, icon, positive }) {
+    return (
+        <div className="bg-[#121826] rounded-2xl p-6 border border-[#1E293B] hover:border-[#FFD700]/30 transition-all duration-300">
+            <div className="flex justify-between items-start mb-4">
+                <div className="p-3 rounded-xl bg-[#0B0F1A] border border-[#1E293B]">
+                    <Icon name={icon} size={20} className="text-[#FFD700]" />
                 </div>
-                <div>
-                    <h3 className="font-bold text-gray-100 group-hover:text-[#FFD700] transition-colors">{opp.name}</h3>
-                    <span className="text-xs text-gray-500">{opp.chain}</span>
+                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${positive ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
+                    {change}
+                </span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-1">{value}</h3>
+            <p className="text-sm text-gray-400">{label}</p>
+        </div>
+    );
+}
+
+function TaskItem({ task, onToggle }) {
+    return (
+        <div className={`flex items-center gap-4 p-4 rounded-xl border border-[#1E293B] hover:bg-[#1A2235]/50 transition-all duration-200 ${task.completed ? 'opacity-60' : ''}`}>
+            <button onClick={() => onToggle(task.id)}
+                className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${task.completed ? 'bg-[#FFD700] border-[#FFD700] text-black' : 'border-gray-600 hover:border-[#FFD700]'}`}>
+                {task.completed && <Icon name="CheckSquare" size={14} />}
+            </button>
+            <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                    <h4 className={`font-semibold ${task.completed ? 'line-through text-gray-500' : 'text-gray-100'}`}>{task.title}</h4>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-[#1A2235] text-gray-400 border border-[#2D3748]">{task.protocol}</span>
+                </div>
+                <div className="flex items-center gap-3 text-xs text-gray-500">
+                    <span className="flex items-center gap-1"><Icon name="Zap" size={12} /> {task.difficulty}</span>
+                    <span className="flex items-center gap-1"><Icon name="Award" size={12} /> {task.reward}</span>
                 </div>
             </div>
-            <div className={`px-2 py-1 rounded-lg text-xs font-bold ${opp.stage === 'Early' ? 'bg-emerald-500/10 text-emerald-400' : opp.stage === 'Mid' ? 'bg-amber-500/10 text-amber-400' : 'bg-red-500/10 text-red-400'}`}>
-                {opp.stage}
-            </div>
+            <button className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${task.completed ? 'bg-[#1A2235] text-gray-500' : 'bg-[#FFD700] text-black hover:bg-[#E6C200]'}`}>
+                {task.completed ? 'Done' : 'Go'}
+                {!task.completed && <Icon name="ExternalLink" size={14} />}
+            </button>
         </div>
-        <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="bg-[#0B0F1A] rounded-lg p-3 border border-[#1E293B]">
-                <p className="text-xs text-gray-500 mb-1">Score</p>
-                <p className="text-lg font-bold text-[#FFD700]">{opp.score}</p>
-            </div>
-            <div className="bg-[#0B0F1A] rounded-lg p-3 border border-[#1E293B]">
-                <p className="text-xs text-gray-500 mb-1">Funding</p>
-                <p className="text-sm font-semibold text-gray-200">{opp.funding}</p>
-            </div>
-        </div>
-        <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2 text-xs text-gray-400">
-                <Icon name="Activity" size={14} />
-                <span>Effort: {opp.effort}</span>
-            </div>
-            <span className="text-xs text-gray-500">{opp.category}</span>
-        </div>
-        <button className="w-full py-2.5 rounded-xl bg-[#1A2235] text-gray-300 text-sm font-semibold hover:bg-[#FFD700] hover:text-black transition-all duration-200 border border-[#2D3748] hover:border-[#FFD700]">
-            View Details
-        </button>
-    </div>
-);
+    );
+}
 
-const WalletRow = ({ wallet, selected, onClick }) => (
-    <div onClick={() => onClick(wallet)}
-        className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${selected ? 'border-[#FFD700] bg-[#FFD700]/5' : 'border-[#1E293B] hover:bg-[#1A2235]/50'}`}>
-        <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-3">
-                <div className={`w-2 h-2 rounded-full ${wallet.status === 'active' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-                <h4 className="font-semibold text-gray-100">{wallet.name}</h4>
+function OpportunityCard({ opp }) {
+    const stageColor = opp.stage === 'Early' ? 'bg-emerald-500/10 text-emerald-400' : opp.stage === 'Mid' ? 'bg-amber-500/10 text-amber-400' : 'bg-red-500/10 text-red-400';
+    
+    return (
+        <div className="bg-[#121826] rounded-2xl p-6 border border-[#1E293B] hover:border-[#FFD700]/30 transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+            <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FFD700]/20 to-[#FFD700]/5 border border-[#FFD700]/20 flex items-center justify-center text-[#FFD700] font-bold text-lg">
+                        {opp.name[0]}
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-gray-100">{opp.name}</h3>
+                        <span className="text-xs text-gray-500">{opp.chain}</span>
+                    </div>
+                </div>
+                <div className={`px-2 py-1 rounded-lg text-xs font-bold ${stageColor}`}>
+                    {opp.stage}
+                </div>
             </div>
-            <span className="text-xs text-gray-500 font-mono">{wallet.address}</span>
+            <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="bg-[#0B0F1A] rounded-lg p-3 border border-[#1E293B]">
+                    <p className="text-xs text-gray-500 mb-1">Score</p>
+                    <p className="text-lg font-bold text-[#FFD700]">{opp.score}</p>
+                </div>
+                <div className="bg-[#0B0F1A] rounded-lg p-3 border border-[#1E293B]">
+                    <p className="text-xs text-gray-500 mb-1">Funding</p>
+                    <p className="text-sm font-semibold text-gray-200">{opp.funding}</p>
+                </div>
+            </div>
+            <button className="w-full py-2.5 rounded-xl bg-[#1A2235] text-gray-300 text-sm font-semibold hover:bg-[#FFD700] hover:text-black transition-all duration-200 border border-[#2D3748] hover:border-[#FFD700]">
+                View Details
+            </button>
         </div>
-        <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-400">{wallet.balance}</span>
-            <span className={`text-xs px-2 py-1 rounded-full ${wallet.score >= 80 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
-                Score: {wallet.score}
-            </span>
-        </div>
-    </div>
-);
+    );
+}
 
-const EarningsChart = () => {
+function WalletRow({ wallet, selected, onClick }) {
+    return (
+        <div onClick={() => onClick(wallet)}
+            className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${selected ? 'border-[#FFD700] bg-[#FFD700]/5' : 'border-[#1E293B] hover:bg-[#1A2235]/50'}`}>
+            <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full ${wallet.status === 'active' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                    <h4 className="font-semibold text-gray-100">{wallet.name}</h4>
+                </div>
+                <span className="text-xs text-gray-500 font-mono">{wallet.address}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-400">{wallet.balance}</span>
+                <span className={`text-xs px-2 py-1 rounded-full ${wallet.score >= 80 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                    Score: {wallet.score}
+                </span>
+            </div>
+        </div>
+    );
+}
+
+// Charts
+function EarningsChart() {
     const data = [30, 45, 35, 50, 48, 60, 55, 70, 65, 80, 75, 90];
     const max = Math.max(...data);
     const points = data.map((d, i) => `${(i / (data.length - 1)) * 100},${100 - (d / max) * 100}`).join(' ');
@@ -201,9 +197,9 @@ const EarningsChart = () => {
             </div>
         </div>
     );
-};
+}
 
-const GasProfitChart = () => {
+function GasProfitChart() {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     const profit = [1200, 1900, 1500, 2200, 2800, 3200];
     const gas = [400, 350, 500, 450, 600, 550];
@@ -222,7 +218,7 @@ const GasProfitChart = () => {
             ))}
         </div>
     );
-};
+}
 
 // Main App
 function App() {
@@ -604,23 +600,35 @@ function App() {
                     </div>
                 </div>
                 <div className="flex-1 overflow-y-auto py-6 px-3">
-                    <SidebarSection title="Main">
-                        <SidebarItem icon="LayoutDashboard" label="Dashboard" active={activePage === 'dashboard'} onClick={() => setActivePage('dashboard')} />
-                        <SidebarItem icon="Target" label="Opportunities" active={activePage === 'opportunities'} onClick={() => setActivePage('opportunities')} />
-                        <SidebarItem icon="CheckSquare" label="Tasks" active={activePage === 'tasks'} onClick={() => setActivePage('tasks')} />
-                        <SidebarItem icon="Wallet" label="Wallets" active={activePage === 'wallets'} onClick={() => setActivePage('wallets')} />
-                    </SidebarSection>
-                    <SidebarSection title="Growth">
-                        <SidebarItem icon="Flame" label="Creator Hub" active={activePage === 'creator'} onClick={() => setActivePage('creator')} />
-                        <SidebarItem icon="Zap" label="Alpha" active={activePage === 'alpha'} onClick={() => setActivePage('alpha')} />
-                    </SidebarSection>
-                    <SidebarSection title="Finance">
-                        <SidebarItem icon="BarChart3" label="Analytics" active={activePage === 'analytics'} onClick={() => setActivePage('analytics')} />
-                    </SidebarSection>
-                    <SidebarSection title="Tools">
-                        <SidebarItem icon="TrendingUp" label="Strategy" active={activePage === 'strategy'} onClick={() => setActivePage('strategy')} />
-                        <SidebarItem icon="FileText" label="Notes" active={activePage === 'notes'} onClick={() => setActivePage('notes')} />
-                    </SidebarSection>
+                    <div className="mb-6">
+                        <h3 className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Main</h3>
+                        <div className="space-y-1">
+                            <SidebarItem icon="LayoutDashboard" label="Dashboard" active={activePage === 'dashboard'} onClick={() => setActivePage('dashboard')} />
+                            <SidebarItem icon="Target" label="Opportunities" active={activePage === 'opportunities'} onClick={() => setActivePage('opportunities')} />
+                            <SidebarItem icon="CheckSquare" label="Tasks" active={activePage === 'tasks'} onClick={() => setActivePage('tasks')} />
+                            <SidebarItem icon="Wallet" label="Wallets" active={activePage === 'wallets'} onClick={() => setActivePage('wallets')} />
+                        </div>
+                    </div>
+                    <div className="mb-6">
+                        <h3 className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Growth</h3>
+                        <div className="space-y-1">
+                            <SidebarItem icon="Flame" label="Creator Hub" active={activePage === 'creator'} onClick={() => setActivePage('creator')} />
+                            <SidebarItem icon="Zap" label="Alpha" active={activePage === 'alpha'} onClick={() => setActivePage('alpha')} />
+                        </div>
+                    </div>
+                    <div className="mb-6">
+                        <h3 className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Finance</h3>
+                        <div className="space-y-1">
+                            <SidebarItem icon="BarChart3" label="Analytics" active={activePage === 'analytics'} onClick={() => setActivePage('analytics')} />
+                        </div>
+                    </div>
+                    <div className="mb-6">
+                        <h3 className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Tools</h3>
+                        <div className="space-y-1">
+                            <SidebarItem icon="TrendingUp" label="Strategy" active={activePage === 'strategy'} onClick={() => setActivePage('strategy')} />
+                            <SidebarItem icon="FileText" label="Notes" active={activePage === 'notes'} onClick={() => setActivePage('notes')} />
+                        </div>
+                    </div>
                 </div>
                 <div className="p-4 border-t border-[#1E293B]">
                     <div className="bg-[#1A2235] rounded-xl p-4 border border-[#2D3748]">
