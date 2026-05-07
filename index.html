@@ -1,43 +1,3097 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AirdropX Dashboard</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body { 
-            margin: 0; 
-            background-color: #0B0F1A; 
-            color: #f3f4f6; 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-        }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0B0F1A; }
-        ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 4px; }
-        .gold-text { color: #FFD700; }
-        .gold-bg { background-color: #FFD700; }
-        .card-bg { background-color: #121826; }
-        .border-dark { border-color: #1E293B; }
-    </style>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        dark: { bg: '#0B0F1A', card: '#121826', border: '#1E293B' }
-                    }
-                }
-            }
-        }
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DropElite Pro · Crypto Farming Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════ */
+:root {
+  --bg:       #050810;
+  --bg1:      #080c18;
+  --bg2:      #0c1220;
+  --bg3:      #101828;
+  --surface:  #131c2e;
+  --s2:       #182236;
+  --s3:       #1e2a40;
+  --border:   rgba(255,255,255,.06);
+  --b-gold:   rgba(250,189,0,.15);
+  --b-cyan:   rgba(0,229,255,.12);
+
+  --gold:     #FABD00;
+  --gold2:    #FFD95A;
+  --gold3:    rgba(250,189,0,.08);
+  --cyan:     #00E5FF;
+  --cyan2:    rgba(0,229,255,.08);
+  --green:    #00E676;
+  --green2:   rgba(0,230,118,.08);
+  --red:      #FF4560;
+  --red2:     rgba(255,69,96,.08);
+  --purple:   #C084FC;
+  --orange:   #FB923C;
+  --blue:     #60A5FA;
+
+  --text:     #E8F0FE;
+  --text2:    #94A3B8;
+  --text3:    #4A5568;
+
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'Outfit', sans-serif;
+  --font-mono:    'Space Mono', monospace;
+
+  --r: 8px;
+  --r2: 12px;
+  --shadow: 0 4px 24px rgba(0,0,0,.4);
+  --shadow2: 0 8px 48px rgba(0,0,0,.6);
+  --glow-gold: 0 0 40px rgba(250,189,0,.15);
+  --glow-cyan: 0 0 40px rgba(0,229,255,.1);
+
+  --sidebar-w: 240px;
+  --topbar-h:  64px;
+}
+
+/* ═══════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:14px;
+  line-height:1.6;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(250,189,0,.2);border-radius:4px}
+
+/* ─── Background grid ─── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(250,189,0,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(250,189,0,.025) 1px,transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;z-index:0;
+}
+
+/* ─── Glow orbs ─── */
+body::after{
+  content:'';
+  position:fixed;
+  width:600px;height:600px;
+  top:-200px;right:-200px;
+  background:radial-gradient(circle,rgba(250,189,0,.04) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
+
+/* ═══════════════════════════════════════
+   LANDING / PRICING PAGE
+═══════════════════════════════════════ */
+#landingScreen{
+  position:fixed;inset:0;
+  background:var(--bg);
+  z-index:2000;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+}
+
+.land-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 48px;
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;
+  background:rgba(5,8,16,.9);
+  backdrop-filter:blur(20px);
+  z-index:10;
+}
+.land-logo{
+  font-family:var(--font-display);
+  font-size:22px;font-weight:800;
+  color:var(--gold);
+  letter-spacing:1px;
+}
+.land-logo span{color:var(--text2);font-weight:400;font-size:14px;margin-left:8px;font-family:var(--font-body)}
+
+.land-hero{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;
+  padding:80px 20px 60px;
+  text-align:center;
+  position:relative;z-index:1;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(250,189,0,.08);
+  border:1px solid rgba(250,189,0,.2);
+  color:var(--gold);
+  padding:6px 16px;font-size:12px;
+  font-family:var(--font-mono);
+  letter-spacing:2px;
+  border-radius:20px;
+  margin-bottom:28px;
+  animation:fadeUp .6s ease;
+}
+.hero-title{
+  font-family:var(--font-display);
+  font-size:clamp(40px,7vw,80px);
+  font-weight:800;
+  line-height:1.05;
+  margin-bottom:24px;
+  animation:fadeUp .6s .1s ease both;
+}
+.hero-title .g{
+  background:linear-gradient(135deg,var(--gold),var(--gold2),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero-sub{
+  font-size:18px;color:var(--text2);
+  max-width:600px;line-height:1.7;
+  margin-bottom:48px;
+  font-weight:400;
+  animation:fadeUp .6s .2s ease both;
+}
+.hero-stats{
+  display:flex;gap:40px;justify-content:center;
+  margin-bottom:64px;
+  animation:fadeUp .6s .3s ease both;
+  flex-wrap:wrap;
+}
+.hs{text-align:center}
+.hs-n{
+  font-family:var(--font-display);
+  font-size:36px;font-weight:800;
+  color:var(--gold);display:block;line-height:1;
+}
+.hs-l{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-top:4px}
+
+/* PRICING */
+.pricing-wrap{
+  width:100%;max-width:1000px;margin:0 auto;
+  padding:0 20px 80px;
+  position:relative;z-index:1;
+}
+.pricing-title{
+  text-align:center;
+  font-family:var(--font-display);
+  font-size:32px;font-weight:700;
+  margin-bottom:8px;
+}
+.pricing-sub{text-align:center;color:var(--text2);margin-bottom:40px;font-size:15px}
+
+.pricing-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+.plan-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  padding:28px 24px;
+  position:relative;
+  overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+  cursor:pointer;
+}
+.plan-card:hover{transform:translateY(-4px);box-shadow:var(--shadow2)}
+.plan-card.popular{
+  border-color:rgba(250,189,0,.4);
+  background:linear-gradient(145deg,var(--surface),rgba(250,189,0,.04));
+}
+.plan-card.popular::before{
+  content:'MOST POPULAR';
+  position:absolute;top:12px;right:-28px;
+  background:var(--gold);color:#000;
+  font-size:9px;font-weight:800;letter-spacing:2px;
+  padding:4px 36px;
+  transform:rotate(45deg);
+  font-family:var(--font-mono);
+}
+.plan-tag{
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--text3);font-family:var(--font-mono);
+  margin-bottom:8px;
+}
+.plan-name{
+  font-family:var(--font-display);
+  font-size:22px;font-weight:700;
+  color:var(--text);margin-bottom:4px;
+}
+.plan-price{
+  font-family:var(--font-display);
+  font-size:42px;font-weight:800;
+  color:var(--gold);line-height:1;
+  margin:16px 0 4px;
+}
+.plan-price span{font-size:16px;font-weight:400;color:var(--text2);font-family:var(--font-body)}
+.plan-save{
+  font-size:11px;color:var(--green);
+  font-family:var(--font-mono);
+  margin-bottom:20px;min-height:16px;
+}
+.plan-feats{list-style:none;margin-bottom:24px}
+.plan-feats li{
+  font-size:13px;color:var(--text2);
+  padding:5px 0;
+  display:flex;align-items:center;gap:8px;
+}
+.plan-feats li::before{content:'✓';color:var(--green);font-weight:700;font-size:12px}
+.plan-btn{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:var(--r);
+  font-family:var(--font-display);
+  font-size:14px;font-weight:700;
+  letter-spacing:1px;
+  cursor:pointer;
+  transition:all .2s;
+  text-transform:uppercase;
+}
+.plan-btn-gold{background:var(--gold);color:#000}
+.plan-btn-gold:hover{background:var(--gold2);transform:scale(1.02)}
+.plan-btn-out{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.plan-btn-out:hover{border-color:rgba(250,189,0,.4);color:var(--gold)}
+
+.land-features{
+  width:100%;max-width:1000px;
+  margin:0 auto;padding:0 20px 80px;
+  position:relative;z-index:1;
+}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feat-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r2);padding:24px;
+}
+.feat-ico{font-size:28px;margin-bottom:12px}
+.feat-title{font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:6px}
+.feat-desc{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* ═══════════════════════════════════════
+   AUTH
+═══════════════════════════════════════ */
+#authScreen{
+  position:fixed;inset:0;
+  background:var(--bg);
+  z-index:1500;
+  display:none;
+  align-items:center;justify-content:center;
+}
+.auth-wrap{
+  width:460px;max-width:95vw;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  overflow:hidden;
+  box-shadow:var(--shadow2);
+  position:relative;z-index:1;
+}
+.auth-top{
+  padding:32px 36px 24px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(135deg,rgba(250,189,0,.04),transparent);
+}
+.auth-top::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--gold),var(--cyan));
+}
+.auth-logo{
+  font-family:var(--font-display);font-size:24px;font-weight:800;
+  color:var(--gold);letter-spacing:1px;margin-bottom:4px;
+}
+.auth-tagline{font-size:12px;color:var(--text3);font-family:var(--font-mono)}
+.auth-body{padding:28px 36px 32px}
+.auth-tabs{
+  display:flex;gap:0;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:4px;
+  margin-bottom:24px;
+}
+.auth-tab{
+  flex:1;padding:8px;text-align:center;
+  font-size:12px;font-weight:600;
+  letter-spacing:1px;text-transform:uppercase;
+  color:var(--text3);cursor:pointer;
+  border-radius:6px;
+  transition:all .2s;
+}
+.auth-tab.active{background:var(--gold);color:#000}
+.afield{margin-bottom:16px}
+.afield label{
+  display:block;font-size:11px;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text3);font-family:var(--font-mono);
+  margin-bottom:6px;
+}
+.afield input{
+  width:100%;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:11px 14px;
+  border-radius:var(--r);
+  font-family:var(--font-body);font-size:14px;
+  outline:none;
+  transition:border-color .2s;
+}
+.afield input:focus{border-color:rgba(250,189,0,.4)}
+.auth-btn{
+  width:100%;
+  padding:13px;
+  background:var(--gold);color:#000;
+  border:none;border-radius:var(--r);
+  font-family:var(--font-display);font-size:14px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;
+  transition:all .2s;margin-top:4px;
+}
+.auth-btn:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(250,189,0,.25)}
+.auth-err{
+  color:var(--red);font-size:12px;
+  margin-top:8px;display:none;
+  padding:8px 12px;
+  background:rgba(255,69,96,.08);
+  border:1px solid rgba(255,69,96,.2);
+  border-radius:6px;
+}
+.auth-switch{
+  text-align:center;font-size:12px;color:var(--text3);
+  margin-top:16px;
+}
+.auth-switch a{color:var(--gold);cursor:pointer;text-decoration:none}
+.auth-form{display:none}.auth-form.active{display:block}
+.back-to-plans{
+  display:flex;align-items:center;gap:6px;
+  color:var(--text3);font-size:12px;cursor:pointer;
+  font-family:var(--font-mono);
+  margin-bottom:20px;
+  transition:color .2s;
+}
+.back-to-plans:hover{color:var(--gold)}
+
+/* ═══════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════ */
+#appShell{display:none;min-height:100vh;position:relative;z-index:1}
+
+/* ─── SIDEBAR ─── */
+.sidebar{
+  width:var(--sidebar-w);
+  background:var(--bg1);
+  border-right:1px solid var(--border);
+  position:fixed;top:0;left:0;height:100vh;
+  overflow-y:auto;z-index:100;
+  display:flex;flex-direction:column;
+  transition:transform .3s;
+}
+.sb-brand{
+  padding:20px 20px 16px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.sb-logo{
+  font-family:var(--font-display);font-size:20px;font-weight:800;
+  color:var(--gold);letter-spacing:1px;
+  display:flex;align-items:center;gap:8px;
+}
+.sb-logo-badge{
+  font-size:9px;
+  background:linear-gradient(135deg,var(--gold),var(--cyan));
+  color:#000;font-weight:800;
+  padding:2px 6px;border-radius:4px;
+  font-family:var(--font-mono);letter-spacing:1px;
+}
+.sb-version{font-size:10px;color:var(--text3);font-family:var(--font-mono);margin-top:3px}
+
+.sb-user{
+  padding:14px 20px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.sb-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-size:15px;font-weight:700;color:#000;
+  flex-shrink:0;
+}
+.sb-uname{font-size:13px;font-weight:600;color:var(--text)}
+.sb-plan{font-size:10px;color:var(--gold);font-family:var(--font-mono);letter-spacing:1px}
+
+.sb-section{
+  padding:16px 20px 6px;
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--text3);font-family:var(--font-mono);
+}
+.sb-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 20px;
+  cursor:pointer;
+  color:var(--text2);font-size:13px;
+  border-left:2px solid transparent;
+  transition:all .15s;user-select:none;
+}
+.sb-item:hover{background:rgba(250,189,0,.04);color:var(--text)}
+.sb-item.active{
+  border-left-color:var(--gold);
+  background:rgba(250,189,0,.06);
+  color:var(--gold);
+}
+.sb-ico{width:18px;font-size:14px;text-align:center;flex-shrink:0}
+.sb-badge{
+  margin-left:auto;font-size:10px;
+  background:rgba(255,69,96,.15);color:var(--red);
+  padding:1px 7px;border-radius:10px;
+  font-family:var(--font-mono);
+}
+.sb-badge.g{background:rgba(0,230,118,.1);color:var(--green)}
+.sb-bottom{
+  margin-top:auto;padding:14px 20px;
+  border-top:1px solid var(--border);flex-shrink:0;
+}
+.sb-quota{margin-bottom:12px}
+.sb-quota-label{
+  display:flex;justify-content:space-between;
+  font-size:10px;color:var(--text3);
+  font-family:var(--font-mono);margin-bottom:5px;
+}
+.sb-prog{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.sb-prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--cyan));border-radius:2px;transition:width .4s}
+.logout-btn{
+  display:flex;align-items:center;gap:8px;
+  color:var(--text3);font-size:12px;cursor:pointer;
+  transition:color .2s;font-family:var(--font-mono);
+}
+.logout-btn:hover{color:var(--red)}
+
+/* ─── TOPBAR ─── */
+.topbar-fixed{
+  position:fixed;top:0;left:var(--sidebar-w);right:0;
+  height:var(--topbar-h);
+  background:rgba(5,8,16,.92);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  z-index:50;
+  display:flex;align-items:center;
+  padding:0 28px;
+  justify-content:space-between;
+  gap:16px;
+}
+.tb-left{display:flex;align-items:center;gap:16px}
+.tb-page-name{
+  font-family:var(--font-display);
+  font-size:20px;font-weight:700;color:var(--text);
+}
+.tb-right{display:flex;align-items:center;gap:12px}
+.tb-date{
+  font-size:11px;color:var(--text3);
+  font-family:var(--font-mono);
+  background:var(--bg2);
+  border:1px solid var(--border);
+  padding:5px 12px;border-radius:6px;
+}
+.tb-notif{
+  width:36px;height:36px;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;
+  position:relative;transition:all .2s;
+}
+.tb-notif:hover{border-color:rgba(250,189,0,.3)}
+.notif-dot{
+  position:absolute;top:6px;right:6px;
+  width:7px;height:7px;background:var(--red);
+  border-radius:50%;border:1px solid var(--bg);
+}
+
+/* ─── MAIN ─── */
+.main{
+  margin-left:var(--sidebar-w);
+  padding-top:var(--topbar-h);
+  min-height:100vh;
+  position:relative;z-index:1;
+}
+.main-inner{padding:28px}
+
+/* ─── PANELS ─── */
+.panel{display:none;animation:fadeUp .25s ease}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════════
+   COMPONENTS
+═══════════════════════════════════════ */
+
+/* Page header */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.ph-title{font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--text);line-height:1.1}
+.ph-title span{color:var(--gold)}
+.ph-sub{font-size:13px;color:var(--text3);margin-top:3px}
+.ph-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* Stat grid */
+.stat-grid{display:grid;gap:14px;margin-bottom:22px}
+.sg4{grid-template-columns:repeat(4,1fr)}
+.sg3{grid-template-columns:repeat(3,1fr)}
+.sg2{grid-template-columns:repeat(2,1fr)}
+
+.stat-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  padding:20px;
+  position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+}
+.stat-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--g);
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.sc-g1{--g:linear-gradient(90deg,var(--gold),transparent)}
+.sc-g2{--g:linear-gradient(90deg,var(--cyan),transparent)}
+.sc-g3{--g:linear-gradient(90deg,var(--green),transparent)}
+.sc-g4{--g:linear-gradient(90deg,var(--red),transparent)}
+.sc-g5{--g:linear-gradient(90deg,var(--purple),transparent)}
+.sc-ico{font-size:22px;margin-bottom:10px;display:block}
+.sc-n{
+  font-family:var(--font-display);
+  font-size:34px;font-weight:700;
+  line-height:1;display:block;
+  margin-bottom:3px;
+}
+.sc-l{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;font-family:var(--font-mono)}
+.sc-trend{
+  font-size:11px;margin-top:8px;
+  font-family:var(--font-mono);
+}
+.sc-trend.up{color:var(--green)}.sc-trend.dn{color:var(--red)}
+
+/* Cards */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  padding:24px;
+  position:relative;overflow:hidden;
+  margin-bottom:16px;
+}
+.card-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;gap:10px;flex-wrap:wrap;
+}
+.card-title{
+  font-family:var(--font-display);
+  font-size:16px;font-weight:700;
+  color:var(--text);
+  display:flex;align-items:center;gap:8px;
+}
+.card-title-ico{font-size:18px}
+
+/* 2-col layout */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g2-37{display:grid;grid-template-columns:3fr 2fr;gap:16px}
+
+/* Forms */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-row3{grid-template-columns:1fr 1fr 1fr}
+.form-row4{grid-template-columns:1fr 1fr 1fr 1fr}
+.fg{margin-bottom:14px}
+.lbl{
+  display:block;font-size:10px;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text3);font-family:var(--font-mono);
+  margin-bottom:6px;
+}
+input,select,textarea{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:var(--r);
+  font-family:var(--font-body);font-size:13px;
+  width:100%;
+  outline:none;
+  transition:border-color .2s,box-shadow .2s;
+  -webkit-appearance:none;appearance:none;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:rgba(250,189,0,.4);
+  box-shadow:0 0 0 3px rgba(250,189,0,.06);
+}
+select option{background:var(--bg2);color:var(--text)}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+input[type="checkbox"]{
+  width:16px;height:16px;cursor:pointer;flex-shrink:0;
+  accent-color:var(--gold);
+}
+
+/* Buttons */
+.btn{
+  padding:9px 20px;
+  font-family:var(--font-display);
+  font-size:12px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;border:none;
+  border-radius:var(--r);
+  transition:all .2s;
+  display:inline-flex;align-items:center;gap:6px;
+  white-space:nowrap;
+}
+.btn-gold{
+  background:var(--gold);color:#000;
+}
+.btn-gold:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(250,189,0,.25)}
+.btn-outline{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text2);
+}
+.btn-outline:hover{border-color:rgba(250,189,0,.3);color:var(--gold)}
+.btn-danger{
+  background:rgba(255,69,96,.1);
+  border:1px solid rgba(255,69,96,.25);
+  color:var(--red);
+}
+.btn-danger:hover{background:rgba(255,69,96,.2)}
+.btn-cyan{
+  background:rgba(0,229,255,.1);
+  border:1px solid rgba(0,229,255,.25);
+  color:var(--cyan);
+}
+.btn-green{
+  background:rgba(0,230,118,.1);
+  border:1px solid rgba(0,230,118,.25);
+  color:var(--green);
+}
+.btn-sm{padding:6px 14px;font-size:11px}
+.btn-xs{padding:4px 10px;font-size:10px}
+.btn-icon{padding:8px;min-width:36px;justify-content:center}
+
+/* Badges */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;font-size:10px;
+  letter-spacing:.5px;text-transform:uppercase;
+  font-weight:700;border-radius:20px;
+  font-family:var(--font-mono);
+}
+.bd-active{background:rgba(0,229,255,.12);color:var(--cyan);border:1px solid rgba(0,229,255,.2)}
+.bd-farming{background:rgba(192,132,252,.12);color:var(--purple);border:1px solid rgba(192,132,252,.2)}
+.bd-watching{background:rgba(250,189,0,.12);color:var(--gold);border:1px solid rgba(250,189,0,.2)}
+.bd-completed{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.2)}
+.bd-expired{background:rgba(255,69,96,.12);color:var(--red);border:1px solid rgba(255,69,96,.2)}
+.bd-high{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.2)}
+.bd-med{background:rgba(250,189,0,.12);color:var(--gold);border:1px solid rgba(250,189,0,.2)}
+.bd-low{background:rgba(255,69,96,.12);color:var(--red);border:1px solid rgba(255,69,96,.2)}
+
+/* Table */
+.tbl-wrap{overflow-x:auto;border-radius:var(--r)}
+.tbl{width:100%;border-collapse:collapse;min-width:500px}
+.tbl th{
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--text3);text-align:left;
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+  font-family:var(--font-mono);
+  white-space:nowrap;
+  background:var(--bg2);
+}
+.tbl td{
+  padding:12px 14px;
+  border-bottom:1px solid rgba(255,255,255,.025);
+  font-size:13px;vertical-align:middle;
+}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr{transition:background .1s}
+.tbl tbody tr:hover td{background:rgba(250,189,0,.02)}
+
+/* Stars */
+.stars{display:flex;gap:3px}
+.star{
+  font-size:18px;cursor:pointer;
+  color:var(--text3);transition:color .1s,transform .1s;
+  user-select:none;line-height:1;
+}
+.star:hover,.star.on{color:var(--gold)}
+.star:hover{transform:scale(1.2)}
+
+/* Progress */
+.prog-wrap{margin-top:6px}
+.prog-info{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-family:var(--font-mono);margin-bottom:5px}
+.prog-bg{height:4px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:3px;transition:width .4s ease}
+.prog-fill.c{background:linear-gradient(90deg,var(--cyan),var(--blue))}
+.prog-fill.g{background:linear-gradient(90deg,var(--green),var(--cyan))}
+
+/* Task rows */
+.task-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:11px 12px;
+  border-radius:var(--r);
+  cursor:pointer;
+  transition:background .15s;
+  margin-bottom:2px;
+}
+.task-item:hover{background:rgba(255,255,255,.02)}
+.task-cb{
+  width:20px;height:20px;flex-shrink:0;margin-top:1px;
+  border:2px solid var(--border);border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
+  transition:all .2s;
+}
+.task-cb.done{background:var(--green);border-color:var(--green);color:#000}
+.task-txt{font-size:13px;flex:1;line-height:1.4}
+.task-txt.done{text-decoration:line-through;color:var(--text3)}
+.task-meta{font-size:11px;color:var(--text3);margin-top:2px;font-family:var(--font-mono)}
+
+/* Empty state */
+.empty{
+  text-align:center;padding:60px 20px;
+  color:var(--text3);
+}
+.empty-ico{font-size:44px;margin-bottom:14px;opacity:.3;display:block}
+.empty-txt{font-size:14px;margin-bottom:16px}
+
+/* Info box */
+.info-box{
+  background:rgba(0,229,255,.04);
+  border:1px solid rgba(0,229,255,.12);
+  border-left:3px solid var(--cyan);
+  border-radius:var(--r);
+  padding:14px 18px;margin-bottom:16px;
+  font-size:13px;color:var(--text2);line-height:1.7;
+}
+.warn-box{
+  background:rgba(250,189,0,.04);
+  border:1px solid rgba(250,189,0,.12);
+  border-left:3px solid var(--gold);
+  border-radius:var(--r);
+  padding:12px 16px;margin-bottom:14px;
+  font-size:12px;color:var(--text2);line-height:1.6;
+}
+
+/* Tabs */
+.tab-row{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto}
+.tab-btn{
+  padding:10px 20px;cursor:pointer;
+  font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text3);
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:all .2s;white-space:nowrap;
+  font-family:var(--font-mono);
+}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-btn:hover:not(.active){color:var(--text2)}
+
+/* Search/Filter bar */
+.filter-bar{
+  display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;
+}
+.filter-bar input,.filter-bar select{
+  width:auto;flex:0 1 auto;
+  padding:8px 12px;font-size:12px;
+}
+.filter-bar input{flex:1;min-width:140px;max-width:220px}
+
+/* Modal */
+.modal-ov{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.75);
+  z-index:800;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  backdrop-filter:blur(8px);
+}
+.modal-ov.hidden{display:none}
+.modal{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  padding:30px;
+  width:100%;max-width:700px;
+  max-height:90vh;overflow-y:auto;
+  position:relative;
+  box-shadow:var(--shadow2);
+}
+.modal::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),var(--cyan));
+  border-radius:var(--r2) var(--r2) 0 0;
+}
+.modal-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;
+}
+.modal-title{
+  font-family:var(--font-display);font-size:20px;font-weight:700;
+  color:var(--text);display:flex;align-items:center;gap:8px;
+}
+.modal-close{
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+  color:var(--text2);font-size:18px;cursor:pointer;
+  width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;flex-shrink:0;
+}
+.modal-close:hover{background:rgba(255,69,96,.1);border-color:rgba(255,69,96,.3);color:var(--red)}
+.modal-foot{display:flex;gap:10px;margin-top:24px}
+
+/* Toast */
+#toast{
+  position:fixed;bottom:24px;right:24px;
+  padding:13px 22px;font-size:13px;font-weight:700;
+  z-index:9999;
+  transform:translateY(80px);opacity:0;
+  transition:all .35s cubic-bezier(.34,1.56,.64,1);
+  letter-spacing:.5px;pointer-events:none;
+  border-radius:var(--r);
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-body);
+  box-shadow:var(--shadow2);
+}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.ok{background:var(--green);color:#000}
+#toast.err{background:var(--red);color:#fff}
+#toast.info{background:var(--gold);color:#000}
+
+/* ═══════════════════════════════════════
+   DASHBOARD SPECIFIC
+═══════════════════════════════════════ */
+.dash-welcome{
+  background:linear-gradient(135deg,var(--surface),rgba(250,189,0,.04));
+  border:1px solid var(--b-gold);
+  border-radius:var(--r2);
+  padding:24px 28px;margin-bottom:22px;
+  position:relative;overflow:hidden;
+}
+.dash-welcome::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),var(--cyan),transparent);
+}
+.dw-title{
+  font-family:var(--font-display);font-size:26px;font-weight:700;margin-bottom:4px;
+}
+.dw-title span{color:var(--gold)}
+.dw-sub{font-size:13px;color:var(--text2)}
+
+.quick-action-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+  margin-bottom:20px;
+}
+.qa-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r2);padding:14px;
+  cursor:pointer;text-align:center;
+  transition:all .2s;
+}
+.qa-box:hover{border-color:rgba(250,189,0,.3);background:rgba(250,189,0,.04);transform:translateY(-2px)}
+.qa-ico{font-size:24px;display:block;margin-bottom:6px}
+.qa-lbl{font-size:11px;color:var(--text2);font-family:var(--font-mono)}
+
+/* ═══════════════════════════════════════
+   PORTFOLIO SPECIFIC
+═══════════════════════════════════════ */
+.wallet-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  padding:20px 22px;margin-bottom:12px;
+  transition:border-color .2s;
+}
+.wallet-card:hover{border-color:rgba(250,189,0,.2)}
+.wc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.wc-label{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.wc-addr{
+  font-family:var(--font-mono);font-size:11px;color:var(--text3);
+  word-break:break-all;margin-bottom:6px;
+}
+.wc-chain{
+  display:inline-block;padding:2px 8px;font-size:10px;
+  background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.18);
+  color:var(--cyan);font-family:var(--font-mono);letter-spacing:1px;
+  border-radius:4px;text-transform:uppercase;
+}
+.wc-bal{
+  font-family:var(--font-display);font-size:28px;font-weight:700;
+  color:var(--gold);line-height:1;
+}
+.wc-inr{font-size:12px;color:var(--text3);margin-top:3px;font-family:var(--font-mono)}
+.wc-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+
+.port-hero{
+  background:linear-gradient(135deg,var(--surface),rgba(250,189,0,.05));
+  border:1px solid var(--b-gold);border-radius:var(--r2);
+  padding:32px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.port-hero::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),var(--cyan));
+}
+.port-total-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);font-family:var(--font-mono);margin-bottom:8px}
+.port-total{
+  font-family:var(--font-display);font-size:56px;font-weight:800;
+  color:var(--gold);line-height:1;margin-bottom:6px;
+}
+.port-inr{font-size:15px;color:var(--text2);font-family:var(--font-mono)}
+
+/* ═══════════════════════════════════════
+   WEEKLY GRID
+═══════════════════════════════════════ */
+.week-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;
+}
+.week-label{
+  font-family:var(--font-display);font-size:20px;font-weight:700;
+  color:var(--gold);
+}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:20px}
+.day-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r2);padding:12px 10px;min-height:120px;
+}
+.day-box.today{border-color:rgba(250,189,0,.35);background:rgba(250,189,0,.03)}
+.day-name{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);text-align:center;margin-bottom:4px;font-family:var(--font-mono)}
+.day-num{
+  font-family:var(--font-display);font-size:22px;font-weight:700;
+  color:var(--gold);text-align:center;line-height:1;margin-bottom:8px;
+}
+.day-pill{
+  font-size:10px;padding:3px 6px;margin-bottom:3px;
+  border-left:2px solid;background:rgba(0,0,0,.3);
+  border-radius:3px;line-height:1.3;word-break:break-word;color:var(--text3);
+}
+.day-pill.tw{border-left-color:#1da1f2;color:#5aaccc}
+.day-pill.tg{border-left-color:#0088cc;color:#6ab8d0}
+.day-pill.air{border-left-color:var(--gold);color:rgba(250,189,0,.7)}
+.day-pill.rc{border-left-color:var(--green);color:rgba(0,230,118,.7)}
+
+/* ═══════════════════════════════════════
+   NOTE CARDS
+═══════════════════════════════════════ */
+.note-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:18px;margin-bottom:12px;
+  border-left:3px solid var(--gold);
+  transition:transform .2s,box-shadow .2s;
+}
+.note-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.note-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
+.note-card-title{font-size:14px;font-weight:600}
+.note-card-meta{font-size:10px;color:var(--text3);font-family:var(--font-mono);margin-bottom:8px}
+.note-card-body{font-size:13px;color:var(--text2);white-space:pre-line;line-height:1.6}
+
+/* ═══════════════════════════════════════
+   REVIEW CARDS
+═══════════════════════════════════════ */
+.rv-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:20px;margin-bottom:12px;
+}
+.rv-card-hdr{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  margin-bottom:14px;flex-wrap:wrap;gap:8px;
+}
+.rv-metrics{
+  display:flex;gap:16px;flex-wrap:wrap;
+  margin-bottom:12px;font-family:var(--font-mono);font-size:11px;
+}
+.rv-metric{color:var(--text2)}
+.rv-metric span{color:var(--gold);font-weight:700}
+
+/* Separator */
+.sep{height:1px;background:var(--border);margin:16px 0}
+
+/* Chain badge */
+.chain-badge{
+  display:inline-block;padding:2px 8px;font-size:10px;
+  background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.15);
+  color:var(--cyan);font-family:var(--font-mono);letter-spacing:1px;
+  border-radius:4px;text-transform:uppercase;
+}
+
+/* ═══════════════════════════════════════
+   SUBSCRIPTION GATE / PLANS
+═══════════════════════════════════════ */
+.plan-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 12px;border-radius:20px;
+  font-size:10px;font-weight:700;letter-spacing:1px;
+  font-family:var(--font-mono);text-transform:uppercase;
+}
+.plan-chip.pro{background:linear-gradient(135deg,rgba(250,189,0,.15),rgba(0,229,255,.1));border:1px solid rgba(250,189,0,.3);color:var(--gold)}
+.plan-chip.free{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text3)}
+.plan-chip.elite{background:linear-gradient(135deg,rgba(192,132,252,.15),rgba(250,189,0,.1));border:1px solid rgba(192,132,252,.3);color:var(--purple)}
+
+/* Mobile sidebar toggle */
+.mob-menu-btn{
+  display:none;
+  background:var(--bg2);border:1px solid var(--border);
+  color:var(--text2);font-size:20px;
+  width:36px;height:36px;border-radius:8px;
+  align-items:center;justify-content:center;
+  cursor:pointer;
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media(max-width:1100px){
+  .stat-grid.sg4{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:1fr 1fr}
+  .quick-action-grid{grid-template-columns:repeat(2,1fr)}
+  .pricing-grid{grid-template-columns:repeat(2,1fr)}
+  .feat-grid{grid-template-columns:1fr 1fr}
+  .week-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:900px){
+  :root{--sidebar-w:0px}
+  .sidebar{transform:translateX(-240px);--sidebar-w-real:240px;width:240px}
+  .sidebar.open{transform:translateX(0)}
+  .topbar-fixed{left:0}
+  .mob-menu-btn{display:flex}
+  .g2,.g2-37{grid-template-columns:1fr}
+  .g3{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .form-row3,.form-row4{grid-template-columns:1fr 1fr}
+  .stat-grid.sg4{grid-template-columns:repeat(2,1fr)}
+  .week-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:600px){
+  .main-inner{padding:16px}
+  .stat-grid.sg4{grid-template-columns:1fr 1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .feat-grid{grid-template-columns:1fr}
+  .form-row3,.form-row4{grid-template-columns:1fr}
+  .week-grid{grid-template-columns:repeat(2,1fr)}
+  .hero-stats{gap:20px}
+  .modal{padding:20px}
+}
+</style>
 </head>
 <body>
-    <div id="root"></div>
-    <script type="text/babel" src="app.js"></script>
+
+<div id="toast"></div>
+
+<!-- ════════════════════════════
+     LANDING SCREEN
+════════════════════════════ -->
+<div id="landingScreen">
+  <nav class="land-nav">
+    <div class="land-logo">DropElite <span>Pro</span></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-outline btn-sm" onclick="showAuth('login')">Login</button>
+      <button class="btn btn-gold btn-sm" onclick="showAuth('signup')">Get Started →</button>
+    </div>
+  </nav>
+
+  <div class="land-hero">
+    <div class="hero-badge">🌐 The #1 Airdrop Farming Platform</div>
+    <h1 class="hero-title">
+      Farm Smarter.<br><span class="g">Earn More. Stay Ahead.</span>
+    </h1>
+    <p class="hero-sub">
+      The professional command center for crypto airdrop farmers and Web3 influencers.
+      Track unlimited wallets, manage your content pipeline, and grow your income — all in one place.
+    </p>
+    <div class="hero-stats">
+      <div class="hs"><span class="hs-n">500+</span><span class="hs-l">Airdrops Tracked</span></div>
+      <div class="hs"><span class="hs-n">10K+</span><span class="hs-l">Farmers Using It</span></div>
+      <div class="hs"><span class="hs-n">$2M+</span><span class="hs-l">Income Logged</span></div>
+      <div class="hs"><span class="hs-n">4.9★</span><span class="hs-l">User Rating</span></div>
+    </div>
+    <button class="btn btn-gold" style="padding:16px 40px;font-size:15px" onclick="document.querySelector('.pricing-wrap').scrollIntoView({behavior:'smooth'})">
+      View Plans & Pricing ↓
+    </button>
+  </div>
+
+  <!-- FEATURE HIGHLIGHTS -->
+  <div class="land-features">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--text3);margin-bottom:10px;text-transform:uppercase">Everything You Need</div>
+      <div style="font-family:var(--font-display);font-size:28px;font-weight:700">Built for Serious Farmers</div>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-box">
+        <div class="feat-ico">💼</div>
+        <div class="feat-title">Multi-Wallet Portfolio</div>
+        <div class="feat-desc">Track 1 to 10,000+ wallets across all chains. Individual farmers and influencers with thousands of farming wallets — all organized in one view.</div>
+      </div>
+      <div class="feat-box">
+        <div class="feat-ico">🪂</div>
+        <div class="feat-title">Smart Airdrop Tracker</div>
+        <div class="feat-desc">Full CRUD tracker with deadlines, scam scoring, investor info, payout logs. Filter by chain, status, authenticity. Never miss a deadline again.</div>
+      </div>
+      <div class="feat-box">
+        <div class="feat-ico">📝</div>
+        <div class="feat-title">Content Pipeline</div>
+        <div class="feat-desc">Plan, draft, and track every Twitter thread and Telegram post. With AI prompt templates built-in for airdrop research, scam checks, and Hindi posts.</div>
+      </div>
+      <div class="feat-box">
+        <div class="feat-ico">💰</div>
+        <div class="feat-title">Income & Expense Log</div>
+        <div class="feat-desc">Log every airdrop payout, affiliate commission, VIP Telegram income, and gas expense. See your true net profit clearly.</div>
+      </div>
+      <div class="feat-box">
+        <div class="feat-ico">📅</div>
+        <div class="feat-title">Weekly Calendar View</div>
+        <div class="feat-desc">Visual 7-day content and farming schedule. See at a glance what's planned, what's done, and what you're missing for the week.</div>
+      </div>
+      <div class="feat-box">
+        <div class="feat-ico">🔒</div>
+        <div class="feat-title">Secure Cloud Sync</div>
+        <div class="feat-desc">All your data encrypted and synced to the cloud via Firebase. Access from your phone, laptop, or tablet anytime, anywhere.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRICING -->
+  <div class="pricing-wrap">
+    <div class="pricing-title">Simple, Honest Pricing</div>
+    <p class="pricing-sub">Start with a plan that fits your farming level. Cancel anytime.</p>
+    <div class="pricing-grid">
+      <div class="plan-card" onclick="showAuth('signup','monthly')">
+        <div class="plan-tag">Monthly</div>
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">$6<span>/mo</span></div>
+        <div class="plan-save">&nbsp;</div>
+        <ul class="plan-feats">
+          <li>Unlimited airdrop tracking</li>
+          <li>Up to 50 wallets</li>
+          <li>Content planner</li>
+          <li>Income log</li>
+          <li>Weekly review</li>
+        </ul>
+        <button class="plan-btn plan-btn-out">Start Monthly →</button>
+      </div>
+      <div class="plan-card" onclick="showAuth('signup','quarterly')">
+        <div class="plan-tag">3 Months</div>
+        <div class="plan-name">Growth</div>
+        <div class="plan-price">$15<span>/3mo</span></div>
+        <div class="plan-save">Save $3 vs monthly</div>
+        <ul class="plan-feats">
+          <li>Everything in Starter</li>
+          <li>Up to 200 wallets</li>
+          <li>Priority support</li>
+          <li>Bulk wallet import</li>
+          <li>Advanced filters</li>
+        </ul>
+        <button class="plan-btn plan-btn-out">Start Growth →</button>
+      </div>
+      <div class="plan-card popular" onclick="showAuth('signup','biannual')">
+        <div class="plan-tag">6 Months</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">$25<span>/6mo</span></div>
+        <div class="plan-save">Save $11 vs monthly</div>
+        <ul class="plan-feats">
+          <li>Everything in Growth</li>
+          <li>Unlimited wallets</li>
+          <li>AI prompt library</li>
+          <li>Export to CSV</li>
+          <li>Team access (2 users)</li>
+        </ul>
+        <button class="plan-btn plan-btn-gold">Start Pro →</button>
+      </div>
+      <div class="plan-card" onclick="showAuth('signup','yearly')">
+        <div class="plan-tag">1 Year</div>
+        <div class="plan-name">Elite</div>
+        <div class="plan-price">$39<span>/yr</span></div>
+        <div class="plan-save">Save $33 vs monthly 🔥</div>
+        <ul class="plan-feats">
+          <li>Everything in Pro</li>
+          <li>Unlimited team members</li>
+          <li>Early access to features</li>
+          <li>VIP Discord access</li>
+          <li>1-on-1 onboarding call</li>
+        </ul>
+        <button class="plan-btn plan-btn-out">Start Elite →</button>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:28px;font-size:13px;color:var(--text3)">
+      🔒 Secure payments · Cancel anytime · All plans include cloud sync
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     AUTH SCREEN
+════════════════════════════ -->
+<div id="authScreen">
+  <div class="auth-wrap">
+    <div class="auth-top">
+      <div class="auth-logo">⚡ DropElite Pro</div>
+      <div class="auth-tagline">Crypto Farming Command Center</div>
+    </div>
+    <div class="auth-body">
+      <div class="back-to-plans" onclick="goLanding()">← Back to plans</div>
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="atab-login" onclick="switchAuthTab('login')">Login</div>
+        <div class="auth-tab" id="atab-signup" onclick="switchAuthTab('signup')">Sign Up</div>
+      </div>
+
+      <div class="auth-form active" id="af-login">
+        <div class="afield"><label>Email</label><input type="email" id="li-email" placeholder="your@email.com" autocomplete="username"></div>
+        <div class="afield"><label>Password</label><input type="password" id="li-pass" placeholder="••••••••" autocomplete="current-password"></div>
+        <button class="auth-btn" onclick="doLogin()">Login →</button>
+        <div class="auth-err" id="li-err">Incorrect email or password.</div>
+        <div class="auth-switch">No account? <a onclick="switchAuthTab('signup')">Sign up free</a></div>
+      </div>
+
+      <div class="auth-form" id="af-signup">
+        <div class="afield"><label>Full Name</label><input type="text" id="su-name" placeholder="e.g. Rejaul Hoque"></div>
+        <div class="afield"><label>Email</label><input type="email" id="su-email" placeholder="your@email.com"></div>
+        <div class="afield"><label>Password (min 6 chars)</label><input type="password" id="su-pass" placeholder="••••••••"></div>
+        <div class="afield"><label>Confirm Password</label><input type="password" id="su-pass2" placeholder="Repeat password"></div>
+        <button class="auth-btn" onclick="doSignup()">Create Free Account →</button>
+        <div class="auth-err" id="su-err"></div>
+        <div class="auth-switch">Already have an account? <a onclick="switchAuthTab('login')">Login</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     APP SHELL
+════════════════════════════ -->
+<div id="appShell">
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">⚡ DropElite <span class="sb-logo-badge">PRO</span></div>
+    <div class="sb-version" id="sb-date">—</div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar" id="sb-avatar">R</div>
+    <div>
+      <div class="sb-uname" id="sb-uname">—</div>
+      <div class="sb-plan" id="sb-plan">PRO MEMBER</div>
+    </div>
+  </div>
+
+  <div class="sb-section">Main</div>
+  <div class="sb-item active" onclick="goPage('dashboard',this)"><span class="sb-ico">⚡</span><span>Dashboard</span></div>
+  <div class="sb-item" onclick="goPage('portfolio',this)"><span class="sb-ico">💼</span><span>Portfolio</span><span class="sb-badge g" id="sb-wc">0</span></div>
+  <div class="sb-item" onclick="goPage('airdrops',this)"><span class="sb-ico">🪂</span><span>Airdrop Tracker</span><span class="sb-badge" id="sb-ac">0</span></div>
+  <div class="sb-item" onclick="goPage('content',this)"><span class="sb-ico">📝</span><span>Content Planner</span></div>
+  <div class="sb-item" onclick="goPage('weekly',this)"><span class="sb-ico">📅</span><span>Weekly View</span></div>
+
+  <div class="sb-section">Finance</div>
+  <div class="sb-item" onclick="goPage('income',this)"><span class="sb-ico">💰</span><span>Income Log</span></div>
+
+  <div class="sb-section">Tools</div>
+  <div class="sb-item" onclick="goPage('prompts',this)"><span class="sb-ico">🤖</span><span>AI Prompts</span></div>
+  <div class="sb-item" onclick="goPage('review',this)"><span class="sb-ico">📊</span><span>Weekly Review</span></div>
+  <div class="sb-item" onclick="goPage('notes',this)"><span class="sb-ico">🗒️</span><span>Notes & Ideas</span></div>
+
+  <div class="sb-bottom">
+    <div class="sb-quota">
+      <div class="sb-quota-label">
+        <span>Wallets Used</span><span id="sb-quota-n">0 / ∞</span>
+      </div>
+      <div class="sb-prog"><div class="sb-prog-fill" id="sb-prog-fill" style="width:20%"></div></div>
+    </div>
+    <div class="logout-btn" onclick="doLogout()">🚪 Logout</div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar-fixed">
+  <div class="tb-left">
+    <div class="mob-menu-btn" onclick="toggleSidebar()">☰</div>
+    <div class="tb-page-name" id="tb-page">Dashboard</div>
+  </div>
+  <div class="tb-right">
+    <div class="tb-date" id="tb-date">—</div>
+    <div class="tb-notif" title="Notifications">🔔<div class="notif-dot"></div></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+<div class="main-inner">
+
+<!-- ══════════════════════════
+     DASHBOARD
+══════════════════════════ -->
+<div class="panel active" id="page-dashboard">
+  <div class="dash-welcome">
+    <div class="dw-title">Good Day, <span id="gname">Farmer</span> 👋</div>
+    <div class="dw-sub" id="dash-sub">Here's your farming command center. Let's make today count.</div>
+  </div>
+
+  <div class="stat-grid sg4">
+    <div class="stat-card sc-g1">
+      <span class="sc-ico">🪂</span>
+      <span class="sc-n" id="ds-air" style="color:var(--gold)">0</span>
+      <span class="sc-l">Active Airdrops</span>
+    </div>
+    <div class="stat-card sc-g3">
+      <span class="sc-ico">💰</span>
+      <span class="sc-n" id="ds-earn" style="color:var(--green)">₹0</span>
+      <span class="sc-l">Total Earned</span>
+    </div>
+    <div class="stat-card sc-g2">
+      <span class="sc-ico">📝</span>
+      <span class="sc-n" id="ds-posts" style="color:var(--cyan)">0</span>
+      <span class="sc-l">Posts This Week</span>
+    </div>
+    <div class="stat-card sc-g4">
+      <span class="sc-ico">⏳</span>
+      <span class="sc-n" id="ds-tasks" style="color:var(--red)">8</span>
+      <span class="sc-l">Tasks Remaining</span>
+    </div>
+  </div>
+
+  <div class="quick-action-grid">
+    <div class="qa-box" onclick="openM('airModal');clearAirForm()">
+      <span class="qa-ico">🪂</span><div class="qa-lbl">Add Airdrop</div>
+    </div>
+    <div class="qa-box" onclick="openM('walletModal')">
+      <span class="qa-ico">💼</span><div class="qa-lbl">Add Wallet</div>
+    </div>
+    <div class="qa-box" onclick="openM('ctModal');clearCtForm()">
+      <span class="qa-ico">📝</span><div class="qa-lbl">Plan Post</div>
+    </div>
+    <div class="qa-box" onclick="openM('incModal');clearIncForm()">
+      <span class="qa-ico">💰</span><div class="qa-lbl">Log Income</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title"><span class="card-title-ico">⚡</span>Today's 8 Tasks</div>
+        <span style="font-size:12px;color:var(--text3);font-family:var(--font-mono)" id="tc-count">0/8</span>
+      </div>
+      <div id="taskList"></div>
+      <div class="prog-wrap" style="margin-top:12px">
+        <div class="prog-info"><span>Daily Progress</span><span id="tc-pct">0%</span></div>
+        <div class="prog-bg"><div class="prog-fill" id="tc-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title"><span class="card-title-ico">🚀</span>Quick Add Airdrop</div>
+      </div>
+      <div class="fg"><label class="lbl">Project Name *</label><input type="text" id="qa-name" placeholder="e.g. Grass Network, Backpack..."></div>
+      <div class="form-row">
+        <div>
+          <label class="lbl">Blockchain</label>
+          <select id="qa-chain" onchange="chainChange('qa')">
+            <option value="Solana">Solana</option><option value="Ethereum">Ethereum</option>
+            <option value="Base">Base</option><option value="Arbitrum">Arbitrum</option>
+            <option value="BNB Chain">BNB Chain</option><option value="Optimism">Optimism</option>
+            <option value="zkSync">zkSync</option><option value="Other">Other ↓</option>
+          </select>
+          <input type="text" id="qa-cc" placeholder="Type chain..." style="margin-top:8px;display:none">
+        </div>
+        <div>
+          <label class="lbl">Status</label>
+          <select id="qa-status"><option value="active">🔵 Active</option><option value="farming">🟣 Farming</option><option value="watching">🟡 Watching</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div><label class="lbl">Deadline</label><input type="date" id="qa-dl"></div>
+        <div><label class="lbl">Est. Value (USD)</label><input type="text" id="qa-val" placeholder="$50–$500"></div>
+      </div>
+      <div class="fg">
+        <label class="lbl">Authenticity Score</label>
+        <div class="stars" id="qa-stars" data-val="0">
+          <span class="star" onclick="setStar('qa-stars',1)">★</span><span class="star" onclick="setStar('qa-stars',2)">★</span>
+          <span class="star" onclick="setStar('qa-stars',3)">★</span><span class="star" onclick="setStar('qa-stars',4)">★</span>
+          <span class="star" onclick="setStar('qa-stars',5)">★</span>
+        </div>
+      </div>
+      <button class="btn btn-gold" style="width:100%;margin-top:4px" onclick="quickAdd()">⚡ Add to Tracker</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title"><span class="card-title-ico">🪂</span>Active Airdrops</div>
+      <button class="btn btn-outline btn-sm" onclick="goPage('airdrops',null)">View All →</button>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Project</th><th>Chain</th><th>Deadline</th><th>Est. Value</th><th>Auth ★</th><th>Status</th><th>Published</th></tr></thead>
+        <tbody id="dash-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title"><span class="card-title-ico">📅</span>Upcoming Deadlines</div>
+      </div>
+      <div id="deadline-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title"><span class="card-title-ico">💰</span>Recent Income</div>
+        <button class="btn btn-outline btn-sm" onclick="goPage('income',null)">Full Log →</button>
+      </div>
+      <div id="recent-income"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     PORTFOLIO
+══════════════════════════ -->
+<div class="panel" id="page-portfolio">
+  <div class="ph">
+    <div>
+      <div class="ph-title">💼 Wallet <span>Portfolio</span></div>
+      <div class="ph-sub">Track all your farming wallets across every blockchain</div>
+    </div>
+    <div class="ph-actions">
+      <button class="btn btn-outline btn-sm" onclick="openM('bulkWalletModal')">📋 Bulk Import</button>
+      <button class="btn btn-gold btn-sm" onclick="openM('walletModal')">+ Add Wallet</button>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:16px">
+    <div class="port-hero">
+      <div class="port-total-label">Total Portfolio Value</div>
+      <div class="port-total" id="port-total">$0.00</div>
+      <div class="port-inr" id="port-inr">≈ ₹0</div>
+      <div class="sep"></div>
+      <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap">
+        <div style="text-align:center">
+          <div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--green)" id="pt-wc">0</div>
+          <div style="font-size:10px;color:var(--text3);font-family:var(--font-mono);letter-spacing:1px">WALLETS</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--cyan)" id="pt-cc">0</div>
+          <div style="font-size:10px;color:var(--text3);font-family:var(--font-mono);letter-spacing:1px">CHAINS</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--gold)" id="pt-avg">$0</div>
+          <div style="font-size:10px;color:var(--text3);font-family:var(--font-mono);letter-spacing:1px">AVG/WALLET</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px">📊 Chain Breakdown</div>
+      <div id="chain-breakdown"></div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong style="color:var(--cyan)">How to update balances:</strong>
+    Open <strong style="color:#fff">debank.com</strong> → paste your wallet address → copy the total USD value → click "✏️ Update" on any wallet below. For Solana wallets, use <strong style="color:#fff">solscan.io</strong>.
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" id="port-search" placeholder="🔍 Search wallet label or address..." oninput="renderWallets()" style="flex:1">
+    <select id="port-chain-filter" onchange="renderWallets()" style="width:auto">
+      <option value="">All Chains</option>
+      <option>Solana</option><option>Ethereum</option><option>Base</option>
+      <option>Arbitrum</option><option>BNB Chain</option><option>Optimism</option>
+    </select>
+    <select id="port-sort" onchange="renderWallets()" style="width:auto">
+      <option value="desc">Balance: High → Low</option>
+      <option value="asc">Balance: Low → High</option>
+      <option value="newest">Newest First</option>
+    </select>
+  </div>
+
+  <div id="walletList"></div>
+</div>
+
+<!-- ══════════════════════════
+     AIRDROPS
+══════════════════════════ -->
+<div class="panel" id="page-airdrops">
+  <div class="ph">
+    <div>
+      <div class="ph-title">🪂 Airdrop <span>Tracker</span></div>
+      <div class="ph-sub" id="air-count-sub">Track, research, and farm the best opportunities</div>
+    </div>
+    <button class="btn btn-gold btn-sm" onclick="openM('airModal');clearAirForm()">+ New Airdrop</button>
+  </div>
+
+  <div class="stat-grid sg4" style="margin-bottom:16px">
+    <div class="stat-card sc-g2"><span class="sc-ico">🔵</span><span class="sc-n" id="as-active" style="color:var(--cyan)">0</span><span class="sc-l">Active</span></div>
+    <div class="stat-card sc-g5"><span class="sc-ico">🟣</span><span class="sc-n" id="as-farming" style="color:var(--purple)">0</span><span class="sc-l">Farming</span></div>
+    <div class="stat-card sc-g3"><span class="sc-ico">🟢</span><span class="sc-n" id="as-done" style="color:var(--green)">0</span><span class="sc-l">Completed</span></div>
+    <div class="stat-card sc-g1"><span class="sc-ico">💵</span><span class="sc-n" id="as-payout" style="color:var(--gold)">₹0</span><span class="sc-l">Total Payout</span></div>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" id="f-sr" placeholder="🔍 Search project..." oninput="renderAirs()">
+    <select id="f-st" onchange="renderAirs()">
+      <option value="">All Status</option>
+      <option value="active">Active</option><option value="farming">Farming</option>
+      <option value="watching">Watching</option><option value="completed">Completed</option><option value="expired">Expired</option>
+    </select>
+    <select id="f-ch" onchange="renderAirs()">
+      <option value="">All Chains</option>
+      <option>Solana</option><option>Ethereum</option><option>Base</option>
+      <option>Arbitrum</option><option>BNB Chain</option><option>zkSync</option>
+    </select>
+    <select id="f-rt" onchange="renderAirs()">
+      <option value="">All Ratings</option>
+      <option value="5">⭐⭐⭐⭐⭐ Only</option>
+      <option value="4">4+ Stars</option><option value="3">3+ Stars</option>
+    </select>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Project</th><th>Chain</th><th>Status</th><th>Deadline</th><th>Est. Value</th><th>Auth ★</th><th>Payout ₹</th><th>Published</th><th>Actions</th></tr></thead>
+        <tbody id="air-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     CONTENT
+══════════════════════════ -->
+<div class="panel" id="page-content">
+  <div class="ph">
+    <div>
+      <div class="ph-title">📝 Content <span>Planner</span></div>
+      <div class="ph-sub">Plan your Twitter threads and Telegram posts</div>
+    </div>
+    <button class="btn btn-gold btn-sm" onclick="openM('ctModal');clearCtForm()">+ Plan Post</button>
+  </div>
+
+  <div class="stat-grid sg4" style="margin-bottom:16px">
+    <div class="stat-card sc-g1"><span class="sc-ico">📋</span><span class="sc-n" id="cs-planned" style="color:var(--gold)">0</span><span class="sc-l">Planned</span></div>
+    <div class="stat-card sc-g2"><span class="sc-ico">✅</span><span class="sc-n" id="cs-ready" style="color:var(--cyan)">0</span><span class="sc-l">Ready to Post</span></div>
+    <div class="stat-card sc-g3"><span class="sc-ico">🚀</span><span class="sc-n" id="cs-posted" style="color:var(--green)">0</span><span class="sc-l">Posted This Week</span></div>
+    <div class="stat-card sc-g4"><span class="sc-ico">🐦</span><span class="sc-n" id="cs-tw" style="color:var(--red)">0</span><span class="sc-l">Twitter Posts</span></div>
+  </div>
+
+  <div class="tab-row">
+    <div class="tab-btn active" onclick="ctFilter('all',this)">All Posts</div>
+    <div class="tab-btn" onclick="ctFilter('planned',this)">📋 Planned</div>
+    <div class="tab-btn" onclick="ctFilter('writing',this)">✍️ Writing</div>
+    <div class="tab-btn" onclick="ctFilter('ready',this)">✅ Ready</div>
+    <div class="tab-btn" onclick="ctFilter('posted',this)">🚀 Posted</div>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Date</th><th>Platform</th><th>Type</th><th>Topic</th><th>Canva</th><th>AI Prompt</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="ct-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     WEEKLY
+══════════════════════════ -->
+<div class="panel" id="page-weekly">
+  <div class="ph">
+    <div><div class="ph-title">📅 Weekly <span>View</span></div></div>
+  </div>
+  <div class="week-nav">
+    <button class="btn btn-outline btn-sm" onclick="wkOff--;renderWeek()">◀ Prev Week</button>
+    <div class="week-label" id="wk-label">—</div>
+    <button class="btn btn-outline btn-sm" onclick="wkOff++;renderWeek()">Next Week ▶</button>
+  </div>
+  <div class="week-grid" id="wk-grid"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">📋 This Week's Must-Do</div></div>
+      <div class="task-item" onclick="toggleWkTask(this)"><div class="task-cb"></div><div><div class="task-txt">Post 7 Twitter threads (1/day)</div><div class="task-meta">Daily · 30 min/post</div></div></div>
+      <div class="task-item" onclick="toggleWkTask(this)"><div class="task-cb"></div><div><div class="task-txt">Post 14 Telegram guides (2/day)</div><div class="task-meta">Daily · 15 min/post</div></div></div>
+      <div class="task-item" onclick="toggleWkTask(this)"><div class="task-cb"></div><div><div class="task-txt">Research & add 5+ new airdrops</div><div class="task-meta">Ongoing · Use AI Prompt #1</div></div></div>
+      <div class="task-item" onclick="toggleWkTask(this)"><div class="task-cb"></div><div><div class="task-txt">Farm Grass Network (every day)</div><div class="task-meta">Daily · 5 min</div></div></div>
+      <div class="task-item" onclick="toggleWkTask(this)"><div class="task-cb"></div><div><div class="task-txt">Farm Backpack & Base (daily)</div><div class="task-meta">Daily · 10 min</div></div></div>
+      <div class="task-item" onclick="toggleWkTask(this)"><div class="task-cb"></div><div><div class="task-txt">Reply to 70 crypto tweets (10/day)</div><div class="task-meta">Daily engagement strategy</div></div></div>
+      <div class="task-item" onclick="toggleWkTask(this)"><div class="task-cb"></div><div><div class="task-txt">Follow 35 new accounts (5/day)</div><div class="task-meta">Growth strategy</div></div></div>
+      <div class="task-item" onclick="toggleWkTask(this)"><div class="task-cb"></div><div><div class="task-txt">Sunday: Post weekly recap on Telegram</div><div class="task-meta">Sunday only</div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">💰 Income Targets This Week</div></div>
+      <div class="task-item" onclick="toggleWkTask(this)"><div class="task-cb"></div><div><div class="task-txt">Share Binance affiliate in 2 posts</div><div class="task-meta">Income: Affiliate</div></div></div>
+      <div class="task-item" onclick="toggleWkTask(this)"><div class="task-cb"></div><div><div class="task-txt">Check affiliate dashboard for signups</div><div class="task-meta">Review commissions earned</div></div></div>
+      <div class="task-item" onclick="toggleWkTask(this)"><div class="task-cb"></div><div><div class="task-txt">Log all income in Income tracker</div><div class="task-meta">Finance hygiene</div></div></div>
+      <div class="task-item" onclick="toggleWkTask(this)"><div class="task-cb"></div><div><div class="task-txt">DM 3 projects for community manager role</div><div class="task-meta">High-value: ₹15,000–₹50,000/mo</div></div></div>
+      <div class="task-item" onclick="toggleWkTask(this)"><div class="task-cb"></div><div><div class="task-txt">Create 1 PDF guide this week (Gumroad)</div><div class="task-meta">Passive income stream</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     INCOME
+══════════════════════════ -->
+<div class="panel" id="page-income">
+  <div class="ph">
+    <div><div class="ph-title">💰 Income <span>Log</span></div><div class="ph-sub">Track every rupee earned and spent</div></div>
+    <button class="btn btn-gold btn-sm" onclick="openM('incModal');clearIncForm()">+ Add Entry</button>
+  </div>
+  <div class="stat-grid sg4">
+    <div class="stat-card sc-g3"><span class="sc-ico">💚</span><span class="sc-n" id="is-tot" style="color:var(--green)">₹0</span><span class="sc-l">Total Income</span></div>
+    <div class="stat-card sc-g2"><span class="sc-ico">📅</span><span class="sc-n" id="is-mon" style="color:var(--cyan)">₹0</span><span class="sc-l">This Month</span></div>
+    <div class="stat-card sc-g4"><span class="sc-ico">🔴</span><span class="sc-n" id="is-exp" style="color:var(--red)">₹0</span><span class="sc-l">Expenses</span></div>
+    <div class="stat-card sc-g1"><span class="sc-ico">📈</span><span class="sc-n" id="is-net">₹0</span><span class="sc-l">Net Profit</span></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Date</th><th>Type</th><th>Source</th><th>Amount</th><th>Notes</th><th>Del</th></tr></thead>
+        <tbody id="inc-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     AI PROMPTS
+══════════════════════════ -->
+<div class="panel" id="page-prompts">
+  <div class="ph">
+    <div><div class="ph-title">🤖 AI <span>Prompt Library</span></div><div class="ph-sub">Copy-paste prompts optimized for crypto farming content</div></div>
+  </div>
+  <div class="warn-box">
+    💡 These prompts are optimized for Claude, ChatGPT, and Gemini. Just copy the prompt, paste it into your AI tool of choice, and fill in the [BRACKETS].
+  </div>
+  <div id="prompt-list"></div>
+</div>
+
+<!-- ══════════════════════════
+     REVIEW
+══════════════════════════ -->
+<div class="panel" id="page-review">
+  <div class="ph">
+    <div><div class="ph-title">📊 Weekly <span>Review</span></div></div>
+    <button class="btn btn-gold btn-sm" onclick="saveReview()">💾 Save Review</button>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:16px">📈 This Week's Numbers</div>
+      <div class="fg"><label class="lbl">Week Of</label><input type="date" id="rv-wk"></div>
+      <div class="form-row">
+        <div><label class="lbl">Twitter Posts</label><input type="number" id="rv-tw" placeholder="0"></div>
+        <div><label class="lbl">Telegram Posts</label><input type="number" id="rv-tg" placeholder="0"></div>
+      </div>
+      <div class="form-row">
+        <div><label class="lbl">Twitter Followers +/-</label><input type="text" id="rv-twf" placeholder="+23"></div>
+        <div><label class="lbl">TG Members +/-</label><input type="text" id="rv-tgm" placeholder="+15"></div>
+      </div>
+      <div class="form-row">
+        <div><label class="lbl">Airdrops Farmed</label><input type="number" id="rv-far" placeholder="0"></div>
+        <div><label class="lbl">Income This Week ₹</label><input type="number" id="rv-inc" placeholder="0"></div>
+      </div>
+      <div class="form-row">
+        <div><label class="lbl">Best Post Topic</label><input type="text" id="rv-best" placeholder="Thread topic..."></div>
+        <div><label class="lbl">Twitter Impressions</label><input type="text" id="rv-imp" placeholder="5,200"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:16px">🧠 Reflections</div>
+      <div class="fg"><label class="lbl">What Worked Well?</label><textarea id="rv-wk2" placeholder="Strong engagement, new airdrops..."></textarea></div>
+      <div class="fg"><label class="lbl">Challenges This Week?</label><textarea id="rv-ch" placeholder="What was hard, what flopped..."></textarea></div>
+      <div class="fg"><label class="lbl">Top 3 Priorities Next Week</label><textarea id="rv-pr" placeholder="1. &#10;2. &#10;3." style="min-height:65px"></textarea></div>
+      <div class="fg">
+        <label class="lbl">Energy / Mood This Week</label>
+        <div class="stars" id="rv-mood" data-val="0" style="margin-top:6px">
+          <span class="star" onclick="setStar('rv-mood',1)" title="Bad">😞</span>
+          <span class="star" onclick="setStar('rv-mood',2)" title="OK">😐</span>
+          <span class="star" onclick="setStar('rv-mood',3)" title="Good">🙂</span>
+          <span class="star" onclick="setStar('rv-mood',4)" title="Great">😊</span>
+          <span class="star" onclick="setStar('rv-mood',5)" title="Amazing">🔥</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:16px">📁 Past Reviews</div>
+    <div id="past-rv"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     NOTES
+══════════════════════════ -->
+<div class="panel" id="page-notes">
+  <div class="ph">
+    <div><div class="ph-title">🗒️ Notes &amp; <span>Ideas</span></div><div class="ph-sub">Capture every idea before it disappears</div></div>
+  </div>
+  <div class="g2-37">
+    <div id="notes-grid"></div>
+    <div class="card" style="position:sticky;top:calc(var(--topbar-h) + 16px);align-self:start">
+      <div class="card-title" style="margin-bottom:16px">✨ New Note</div>
+      <div class="fg"><label class="lbl">Title *</label><input type="text" id="n-t" placeholder="Thread idea, project to farm..."></div>
+      <div class="fg">
+        <label class="lbl">Category</label>
+        <select id="n-c">
+          <option value="idea">💡 Content Idea</option>
+          <option value="project">🪂 Project to Research</option>
+          <option value="strategy">🎯 Strategy</option>
+          <option value="learn">📚 Lesson Learned</option>
+          <option value="reminder">⏰ Reminder</option>
+        </select>
+      </div>
+      <div class="fg"><label class="lbl">Details</label><textarea id="n-b" placeholder="Write your idea here..." style="min-height:100px"></textarea></div>
+      <button class="btn btn-gold" style="width:100%" onclick="addNote()">💾 Save Note</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- main-inner -->
+</div><!-- main -->
+</div><!-- appShell -->
+
+<!-- ════════════════════════════
+     MODALS
+════════════════════════════ -->
+
+<!-- ADD WALLET -->
+<div class="modal-ov hidden" id="walletModal">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-hdr">
+      <div class="modal-title">💼 Add Wallet</div>
+      <button class="modal-close" onclick="closeM('walletModal')">×</button>
+    </div>
+    <div class="fg"><label class="lbl">Wallet Address *</label><input type="text" id="w-addr" placeholder="0x... or Solana address or BTC address"></div>
+    <div class="form-row">
+      <div>
+        <label class="lbl">Blockchain / Network</label>
+        <select id="w-chain" onchange="chainChange('w')">
+          <option value="Ethereum">Ethereum (EVM)</option><option value="Solana">Solana</option>
+          <option value="BNB Chain">BNB Chain</option><option value="Arbitrum">Arbitrum</option>
+          <option value="Base">Base</option><option value="Optimism">Optimism</option>
+          <option value="Polygon">Polygon</option><option value="Avalanche">Avalanche</option>
+          <option value="Bitcoin">Bitcoin</option><option value="Other">Other ↓</option>
+        </select>
+        <input type="text" id="w-cc" placeholder="Type chain name..." style="margin-top:8px;display:none">
+      </div>
+      <div><label class="lbl">Wallet Label</label><input type="text" id="w-label" placeholder="e.g. Main Farming Wallet #1"></div>
+    </div>
+    <div class="form-row">
+      <div><label class="lbl">Current Balance (USD)</label><input type="number" id="w-bal" placeholder="125.50" step="0.01"></div>
+      <div><label class="lbl">Notes</label><input type="text" id="w-note" placeholder="e.g. Grass farming wallet"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-gold" style="flex:1" onclick="saveWallet()">💾 Save Wallet</button>
+      <button class="btn btn-outline" onclick="closeM('walletModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- BULK WALLET IMPORT -->
+<div class="modal-ov hidden" id="bulkWalletModal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-hdr">
+      <div class="modal-title">📋 Bulk Import Wallets</div>
+      <button class="modal-close" onclick="closeM('bulkWalletModal')">×</button>
+    </div>
+    <div class="info-box">
+      Paste one wallet per line in this format:<br>
+      <strong style="color:var(--gold);font-family:var(--font-mono)">Label | Address | Chain | Balance(USD)</strong><br>
+      Example: <span style="font-family:var(--font-mono);color:var(--text2)">Wallet 1 | 0x123...abc | Ethereum | 50.25</span>
+    </div>
+    <div class="fg"><label class="lbl">Paste Wallets Below *</label><textarea id="bulk-input" placeholder="Wallet 1 | 0x123...abc | Ethereum | 50.25&#10;Sol Farm 1 | ABC...xyz | Solana | 120.00&#10;..." style="min-height:160px;font-family:var(--font-mono);font-size:12px"></textarea></div>
+    <div class="modal-foot">
+      <button class="btn btn-gold" style="flex:1" onclick="bulkImportWallets()">⚡ Import All</button>
+      <button class="btn btn-outline" onclick="closeM('bulkWalletModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- AIRDROP MODAL -->
+<div class="modal-ov hidden" id="airModal">
+  <div class="modal" style="max-width:720px">
+    <div class="modal-hdr">
+      <div class="modal-title">🪂 Airdrop Details</div>
+      <button class="modal-close" onclick="closeM('airModal')">×</button>
+    </div>
+    <input type="hidden" id="af-id">
+    <div class="form-row">
+      <div><label class="lbl">Project Name *</label><input type="text" id="af-name" placeholder="e.g. Grass Network"></div>
+      <div><label class="lbl">Official Website</label><input type="text" id="af-url" placeholder="https://..."></div>
+    </div>
+    <div class="form-row form-row3">
+      <div>
+        <label class="lbl">Blockchain</label>
+        <select id="af-chain" onchange="chainChange('af')">
+          <option value="Solana">Solana</option><option value="Ethereum">Ethereum</option>
+          <option value="Base">Base</option><option value="Arbitrum">Arbitrum</option>
+          <option value="BNB Chain">BNB Chain</option><option value="Optimism">Optimism</option>
+          <option value="zkSync">zkSync</option><option value="Starknet">Starknet</option>
+          <option value="Other">Other ↓</option>
+        </select>
+        <input type="text" id="af-cc" placeholder="Type chain..." style="margin-top:8px;display:none">
+      </div>
+      <div><label class="lbl">Status</label>
+        <select id="af-status">
+          <option value="active">🔵 Active</option><option value="farming">🟣 Farming</option>
+          <option value="watching">🟡 Watching</option><option value="completed">🟢 Completed</option>
+          <option value="expired">🔴 Expired</option>
+        </select>
+      </div>
+      <div><label class="lbl">Date Added</label><input type="date" id="af-dated"></div>
+    </div>
+    <div class="form-row form-row3">
+      <div><label class="lbl">Deadline</label><input type="date" id="af-dl"></div>
+      <div><label class="lbl">Est. Value (USD)</label><input type="text" id="af-est" placeholder="$50–$300"></div>
+      <div><label class="lbl">Actual Payout (₹)</label><input type="text" id="af-pay" placeholder="Fill when paid"></div>
+    </div>
+    <div class="form-row">
+      <div><label class="lbl">Investors / Backers</label><input type="text" id="af-inv" placeholder="a16z, Polychain, Binance Labs..."></div>
+      <div><label class="lbl">Required Actions</label><input type="text" id="af-act" placeholder="Trade, Testnet, Discord, Quiz..."></div>
+    </div>
+    <div class="form-row">
+      <div><label class="lbl">Cost to Farm</label><input type="text" id="af-cost" placeholder="Free / ~$5 gas"></div>
+      <div><label class="lbl">Time Required (mins)</label><input type="number" id="af-time" placeholder="ex 15"></div>
+    </div>
+    <div class="fg">
+      <label class="lbl">Authenticity Score (1=Risky · 5=Very Legit)</label>
+      <div class="stars" id="af-stars" data-val="0" style="margin-top:6px">
+        <span class="star" onclick="setStar('af-stars',1)">★</span><span class="star" onclick="setStar('af-stars',2)">★</span>
+        <span class="star" onclick="setStar('af-stars',3)">★</span><span class="star" onclick="setStar('af-stars',4)">★</span>
+        <span class="star" onclick="setStar('af-stars',5)">★</span>
+      </div>
+    </div>
+    <div class="fg"><label class="lbl">Scam Flags / Red Flags</label><input type="text" id="af-flag" placeholder="Anonymous team, no whitepaper, too-good-to-be-true promises..."></div>
+    <div class="fg">
+      <label class="lbl">Published On</label>
+      <div style="display:flex;gap:20px;margin-top:8px">
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px"><input type="checkbox" id="af-tw" style="width:auto"> 🐦 Twitter</label>
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px"><input type="checkbox" id="af-tg" style="width:auto"> 📱 Telegram</label>
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px"><input type="checkbox" id="af-pdf" style="width:auto"> 📄 PDF Guide</label>
+      </div>
+    </div>
+    <div class="fg"><label class="lbl">Notes</label><textarea id="af-notes" placeholder="Personal observations, farming tips, links to guides..."></textarea></div>
+    <div class="modal-foot">
+      <button class="btn btn-gold" style="flex:1" onclick="saveAir()">💾 Save Airdrop</button>
+      <button class="btn btn-outline" onclick="closeM('airModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT MODAL -->
+<div class="modal-ov hidden" id="ctModal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">📝 Plan a Post</div>
+      <button class="modal-close" onclick="closeM('ctModal')">×</button>
+    </div>
+    <input type="hidden" id="cf-id">
+    <div class="form-row form-row3">
+      <div><label class="lbl">Date to Post</label><input type="date" id="cf-date"></div>
+      <div><label class="lbl">Platform</label>
+        <select id="cf-plat">
+          <option value="twitter">🐦 Twitter Thread</option>
+          <option value="telegram">📱 Telegram Post</option>
+          <option value="both">🐦📱 Both</option>
+          <option value="pdf">📄 PDF Guide</option>
+        </select>
+      </div>
+      <div><label class="lbl">Post Type</label>
+        <select id="cf-type">
+          <option value="airdrop">🚨 Airdrop Alert</option>
+          <option value="education">📚 Education</option>
+          <option value="story">👤 Personal Story</option>
+          <option value="tips">💡 Tips Thread</option>
+          <option value="recap">📊 Weekly Recap</option>
+          <option value="hindi">🇮🇳 Hindi Post</option>
+          <option value="affiliate">🔗 Affiliate</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label class="lbl">Topic / Title *</label><input type="text" id="cf-topic" placeholder="e.g. Grass Network Season 2 Airdrop Guide"></div>
+    <div class="fg"><label class="lbl">Hook (Opening Line)</label><input type="text" id="cf-hook" placeholder="🚨 Grass Season 2 — 170M tokens up for grabs..."></div>
+    <div class="fg"><label class="lbl">Key Points to Cover</label><textarea id="cf-pts" placeholder="• What is it&#10;• Why it's legit&#10;• Step by step guide&#10;• Scam warning&#10;• CTA to join Telegram"></textarea></div>
+    <div class="form-row">
+      <div><label class="lbl">AI Prompt Used</label>
+        <select id="cf-prompt">
+          <option value="">— Select prompt —</option>
+          <option value="p1">Prompt #1 — Airdrop Research</option>
+          <option value="p2">Prompt #2 — Twitter Thread</option>
+          <option value="p3">Prompt #3 — Hindi Post</option>
+          <option value="p4">Prompt #4 — Telegram Post</option>
+          <option value="p5">Prompt #5 — Content Calendar</option>
+          <option value="p6">Prompt #6 — Canva Brief</option>
+          <option value="p7">Prompt #7 — Scam Check</option>
+          <option value="p8">Prompt #8 — Reply Tweet</option>
+        </select>
+      </div>
+      <div><label class="lbl">Status</label>
+        <select id="cf-status">
+          <option value="planned">📋 Planned</option>
+          <option value="writing">✍️ Writing</option>
+          <option value="ready">✅ Ready</option>
+          <option value="posted">🚀 Posted</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div><label class="lbl">Canva Graphic?</label>
+        <select id="cf-can">
+          <option value="no">❌ Not yet</option>
+          <option value="yes">✅ Done</option>
+          <option value="na">N/A</option>
+        </select>
+      </div>
+      <div><label class="lbl">Linked Airdrop Project</label><input type="text" id="cf-proj" placeholder="Project name"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-gold" style="flex:1" onclick="saveCt()">💾 Save Post Plan</button>
+      <button class="btn btn-outline" onclick="closeM('ctModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- INCOME MODAL -->
+<div class="modal-ov hidden" id="incModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-hdr">
+      <div class="modal-title">💰 Log Entry</div>
+      <button class="modal-close" onclick="closeM('incModal')">×</button>
+    </div>
+    <input type="hidden" id="if-id">
+    <div class="form-row form-row3">
+      <div><label class="lbl">Date</label><input type="date" id="if-date"></div>
+      <div><label class="lbl">Type</label>
+        <select id="if-type">
+          <option value="income">💚 Income</option>
+          <option value="expense">🔴 Expense</option>
+        </select>
+      </div>
+      <div><label class="lbl">Amount ₹ *</label><input type="number" id="if-amt" placeholder="2500"></div>
+    </div>
+    <div class="form-row">
+      <div><label class="lbl">Source</label>
+        <select id="if-src">
+          <option value="airdrop">🪂 Airdrop Payout</option>
+          <option value="vip">👑 VIP Telegram</option>
+          <option value="affiliate">🔗 Affiliate Commission</option>
+          <option value="sponsor">📢 Sponsorship</option>
+          <option value="pdf">📄 PDF Sale</option>
+          <option value="xrev">🐦 X/Twitter Revenue</option>
+          <option value="cmgr">👥 Community Manager</option>
+          <option value="tools">🛠️ Tools (expense)</option>
+          <option value="gas">⛽ Gas Fees (expense)</option>
+          <option value="other">📦 Other</option>
+        </select>
+      </div>
+      <div><label class="lbl">Notes</label><input type="text" id="if-note" placeholder="e.g. Grass Season 1 payout"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-gold" style="flex:1" onclick="saveInc()">💾 Save Entry</button>
+      <button class="btn btn-outline" onclick="closeM('incModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+<script>
+'use strict';
+
+/* ─── Firebase ─── */
+const firebaseConfig = {
+  apiKey: "AIzaSyApZJRCy35_ko75B-C9Wrv3xHag_Gf7IZ8",
+  authDomain: "dropelite-96fc0.firebaseapp.com",
+  projectId: "dropelite-96fc0",
+  storageBucket: "dropelite-96fc0.firebasestorage.app",
+  messagingSenderId: "640292984681",
+  appId: "1:640292984681:web:364f43d539ecd9c0e9cff8"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let cloudData = {};
+let saveTimer = null;
+let curUser = null;
+
+function userDoc() {
+  return db.collection('users').doc(auth.currentUser.uid).collection('app').doc('state');
+}
+async function loadCloudData() {
+  const snap = await userDoc().get();
+  cloudData = snap.exists ? (snap.data().data || {}) : {};
+}
+function saveCloudData() {
+  if (!auth.currentUser) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    userDoc().set({ data: cloudData, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+  }, 400);
+}
+
+/* ─── Storage ─── */
+const S = {
+  get: k => cloudData[k] ?? null,
+  set: (k, v) => { cloudData[k] = v; saveCloudData(); return v; },
+  arr: k => cloudData[k] || []
+};
+
+/* ─── Helpers ─── */
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const today = () => new Date().toISOString().slice(0, 10);
+const fmtD = d => { if (!d) return '—'; const [y, m, dy] = d.split('-'); return `${dy}/${m}/${y}`; };
+const fmtM = d => { if (!d) return '—'; const ms = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const [y, m] = d.split('-'); return `${ms[+m - 1]} ${y}`; };
+const inr = n => '₹' + Number(n || 0).toLocaleString('en-IN');
+const dLeft = d => { if (!d) return null; return Math.ceil((new Date(d) - new Date()) / 864e5); };
+const V = id => document.getElementById(id)?.value?.trim() || '';
+const el = id => document.getElementById(id);
+const qs = (sel, parent = document) => parent.querySelector(sel);
+const INR_RATE = 83.5;
+
+/* ─── Toast ─── */
+let toastT;
+function toast(msg, type = 'ok') {
+  clearTimeout(toastT);
+  const t = el('toast');
+  t.innerHTML = (type === 'ok' ? '✓ ' : type === 'err' ? '✗ ' : 'ℹ ') + msg;
+  t.className = `show ${type}`;
+  toastT = setTimeout(() => t.className = '', 2800);
+}
+
+/* ─── Modal ─── */
+function openM(id) { el(id)?.classList.remove('hidden'); }
+function closeM(id) { el(id)?.classList.add('hidden'); }
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-ov')) e.target.classList.add('hidden');
+});
+
+/* ─── Stars ─── */
+function setStar(id, val) {
+  const container = el(id); if (!container) return;
+  container.dataset.val = val;
+  container.querySelectorAll('.star').forEach((s, i) => s.classList.toggle('on', i < val));
+}
+function getStar(id) { return parseInt(el(id)?.dataset?.val || 0); }
+
+/* ─── Chain helpers ─── */
+function chainChange(pfx) {
+  const s = el(pfx + '-chain'), cc = el(pfx + '-cc');
+  if (cc) cc.style.display = s?.value === 'Other' ? 'block' : 'none';
+}
+function getChain(pfx) {
+  const s = el(pfx + '-chain');
+  if (s?.value === 'Other') { const cc = el(pfx + '-cc'); return cc?.value?.trim() || 'Other'; }
+  return s?.value || 'Solana';
+}
+
+/* ─── Sidebar mobile ─── */
+function toggleSidebar() {
+  el('sidebar').classList.toggle('open');
+}
+
+/* ═══════════════════════════════════
+   LANDING / AUTH SCREEN CONTROL
+═══════════════════════════════════ */
+function goLanding() {
+  el('authScreen').style.display = 'none';
+  el('landingScreen').style.display = 'flex';
+}
+function showAuth(tab = 'login', plan = '') {
+  el('landingScreen').style.display = 'none';
+  el('authScreen').style.display = 'flex';
+  switchAuthTab(tab);
+}
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  el('atab-' + tab).classList.add('active');
+  el('af-' + tab).classList.add('active');
+}
+
+/* ═══════════════════════════════════
+   AUTH
+═══════════════════════════════════ */
+async function doSignup() {
+  const name = V('su-name'), email = V('su-email').toLowerCase();
+  const pass = V('su-pass'), pass2 = V('su-pass2');
+  const showErr = msg => { el('su-err').style.display = 'block'; el('su-err').textContent = msg; };
+  if (!name || !email || !pass) return showErr('Please fill all fields.');
+  if (!email.includes('@')) return showErr('Enter a valid email address.');
+  if (pass.length < 6) return showErr('Password must be at least 6 characters.');
+  if (pass !== pass2) return showErr('Passwords do not match.');
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+    await cred.user.updateProfile({ displayName: name });
+    await cred.user.sendEmailVerification();
+    toast('Verification email sent! Check your inbox.', 'info');
+    await auth.signOut();
+    switchAuthTab('login');
+    el('li-email').value = email;
+  } catch (e) { showErr(e.message); }
+}
+
+async function doLogin() {
+  const email = V('li-email').toLowerCase(), pass = V('li-pass');
+  const showErr = msg => { el('li-err').style.display = 'block'; el('li-err').textContent = msg; };
+  try {
+    const cred = await auth.signInWithEmailAndPassword(email, pass);
+    if (!cred.user.emailVerified) {
+      await cred.user.sendEmailVerification();
+      await auth.signOut();
+      return showErr('Please verify your email first. Verification link re-sent.');
+    }
+    el('li-err').style.display = 'none';
+    await loadCloudData();
+    launchApp({ name: cred.user.displayName || email.split('@')[0], username: email });
+  } catch (e) { showErr('Incorrect email or password.'); }
+}
+
+function launchApp(user) {
+  curUser = user;
+  el('landingScreen').style.display = 'none';
+  el('authScreen').style.display = 'none';
+  el('appShell').style.display = 'block';
+  initApp();
+}
+
+async function doLogout() {
+  if (!confirm('Are you sure you want to logout?')) return;
+  await auth.signOut();
+  curUser = null; cloudData = {};
+  el('appShell').style.display = 'none';
+  el('landingScreen').style.display = 'flex';
+}
+
+window.onload = () => {
+  auth.onAuthStateChanged(async user => {
+    if (user) {
+      await user.reload();
+      if (!user.emailVerified) { await auth.signOut(); return; }
+      await loadCloudData();
+      launchApp({ name: user.displayName || user.email.split('@')[0], username: user.email });
+    }
+  });
+};
+
+/* ═══════════════════════════════════
+   INIT APP
+═══════════════════════════════════ */
+function initApp() {
+  if (!curUser) return;
+  const u = curUser;
+  const uname = el('sb-uname'), uav = el('sb-avatar');
+  if (uname) uname.textContent = u.name || u.username;
+  if (uav) uav.textContent = (u.name || 'U')[0].toUpperCase();
+
+  const now = new Date();
+  const h = now.getHours();
+  const greeting = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
+  const gname = el('gname'), gsub = el('dash-sub');
+  if (gname) gname.textContent = (u.name || 'Farmer').split(' ')[0];
+
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const dateStr = now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  if (el('tb-date')) el('tb-date').textContent = dateStr;
+  if (el('sb-date')) el('sb-date').textContent = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  const greetEl = qs('.dw-title');
+  if (greetEl) greetEl.innerHTML = `${greeting}, <span>${(u.name || 'Farmer').split(' ')[0]}</span> 👋`;
+
+  buildPrompts();
+  buildTasks();
+  renderDashAir();
+  updateDashStats();
+  renderDeadlines();
+  renderRecentIncome();
+  renderAirs();
+  renderCt();
+  renderWeek();
+  renderInc();
+  updateIncStats();
+  renderWallets();
+  renderNotes();
+  renderReviews();
+  updateContentStats();
+  updateAirStats();
+  updateSidebarBadges();
+}
+
+/* ─── Navigation ─── */
+const PAGE_NAMES = {
+  dashboard:'Dashboard', portfolio:'Wallet Portfolio', airdrops:'Airdrop Tracker',
+  content:'Content Planner', weekly:'Weekly View', income:'Income Log',
+  prompts:'AI Prompts', review:'Weekly Review', notes:'Notes & Ideas'
+};
+function goPage(id, sbEl) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  el('page-' + id)?.classList.add('active');
+  if (sbEl) sbEl.classList.add('active');
+  else {
+    document.querySelectorAll('.sb-item').forEach(i => {
+      if (i.getAttribute('onclick')?.includes(`'${id}'`)) i.classList.add('active');
+    });
+  }
+  if (el('tb-page')) el('tb-page').textContent = PAGE_NAMES[id] || id;
+  // Close sidebar on mobile
+  el('sidebar')?.classList.remove('open');
+
+  const renders = {
+    dashboard: () => { renderDashAir(); updateDashStats(); renderDeadlines(); renderRecentIncome(); },
+    airdrops: () => { renderAirs(); updateAirStats(); },
+    content: () => { renderCt(); updateContentStats(); },
+    weekly: renderWeek,
+    income: () => { renderInc(); updateIncStats(); },
+    portfolio: renderWallets,
+    review: renderReviews,
+    notes: renderNotes,
+  };
+  renders[id]?.();
+}
+
+/* ═══════════════════════════════════
+   DAILY TASKS
+═══════════════════════════════════ */
+const TASKS = [
+  { txt: '🔍 Find 2 new airdrop projects to research', meta: 'Research · 20 min' },
+  { txt: '🤖 Use Claude Prompt #1 — deep dive both projects', meta: 'AI Research · 15 min' },
+  { txt: '⚠️ Run scam check (Prompt #7) on both projects', meta: 'Safety check · 10 min' },
+  { txt: '🎨 Make Canva graphic for today\'s Twitter post', meta: 'Design · 15 min' },
+  { txt: '🐦 Write & post Twitter thread (Prompt #2)', meta: 'Content · 30 min' },
+  { txt: '📱 Post 2 airdrop guides on Telegram channel', meta: 'Content · 20 min' },
+  { txt: '💬 Reply to 10 big crypto Twitter accounts', meta: 'Engagement · 20 min' },
+  { txt: '🌿 Farm daily: Grass + Backpack + Base', meta: 'Daily farming · 10 min' },
+];
+let taskState = [];
+
+function buildTasks() {
+  const key = 'tasks_' + today();
+  taskState = S.get(key) || new Array(TASKS.length).fill(false);
+  if (taskState.length !== TASKS.length) taskState = new Array(TASKS.length).fill(false);
+  const list = el('taskList');
+  if (!list) return;
+  list.innerHTML = TASKS.map((t, i) => `
+    <div class="task-item" onclick="toggleTask(${i})">
+      <div class="task-cb${taskState[i] ? ' done' : ''}" id="tc${i}">${taskState[i] ? '✓' : ''}</div>
+      <div>
+        <div class="task-txt${taskState[i] ? ' done' : ''}" id="tt${i}">${t.txt}</div>
+        <div class="task-meta">${t.meta}</div>
+      </div>
+    </div>`).join('');
+  updateTaskProg();
+}
+
+function toggleTask(i) {
+  taskState[i] = !taskState[i];
+  S.set('tasks_' + today(), taskState);
+  const cb = el('tc' + i), tt = el('tt' + i);
+  if (cb) { cb.className = 'task-cb' + (taskState[i] ? ' done' : ''); cb.textContent = taskState[i] ? '✓' : ''; }
+  if (tt) tt.className = 'task-txt' + (taskState[i] ? ' done' : '');
+  updateTaskProg();
+}
+
+function toggleWkTask(row) {
+  const cb = qs('.task-cb', row), tt = qs('.task-txt', row);
+  const done = cb.classList.toggle('done');
+  cb.textContent = done ? '✓' : '';
+  tt.classList.toggle('done', done);
+}
+
+function updateTaskProg() {
+  const done = taskState.filter(Boolean).length, total = taskState.length;
+  const pct = Math.round(done / total * 100);
+  if (el('tc-count')) el('tc-count').textContent = `${done}/${total}`;
+  if (el('tc-pct')) el('tc-pct').textContent = pct + '%';
+  if (el('tc-bar')) el('tc-bar').style.width = pct + '%';
+  if (el('ds-tasks')) el('ds-tasks').textContent = total - done;
+}
+
+/* ═══════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════ */
+function weekDates(off = 0) {
+  const d = [], n = new Date(); n.setDate(n.getDate() + off * 7);
+  const day = n.getDay(), mon = new Date(n); mon.setDate(n.getDate() - (day === 0 ? 6 : day - 1));
+  for (let i = 0; i < 7; i++) { const x = new Date(mon); x.setDate(mon.getDate() + i); d.push(x.toISOString().slice(0, 10)); }
+  return d;
+}
+
+function updateDashStats() {
+  const airs = S.arr('airdrops').filter(a => a.status === 'active' || a.status === 'farming');
+  if (el('ds-air')) el('ds-air').textContent = airs.length;
+  const inc = S.arr('income').filter(i => i.type === 'income').reduce((s, i) => s + Number(i.amount), 0);
+  if (el('ds-earn')) el('ds-earn').textContent = inr(inc);
+  const tw = weekDates(0);
+  const posts = S.arr('content').filter(c => c.status === 'posted' && tw.includes(c.date)).length;
+  if (el('ds-posts')) el('ds-posts').textContent = posts;
+  updateSidebarBadges();
+}
+
+function updateSidebarBadges() {
+  const wc = S.arr('wallets').length;
+  const ac = S.arr('airdrops').filter(a => ['active','farming','watching'].includes(a.status)).length;
+  if (el('sb-wc')) el('sb-wc').textContent = wc;
+  if (el('sb-ac')) el('sb-ac').textContent = ac;
+  if (el('sb-quota-n')) el('sb-quota-n').textContent = wc + ' / ∞';
+  if (el('sb-prog-fill')) el('sb-prog-fill').style.width = Math.min(wc / 100 * 100, 100) + '%';
+}
+
+function renderDashAir() {
+  const tbody = el('dash-tbody');
+  const airs = S.arr('airdrops').filter(a => a.status === 'active' || a.status === 'farming').slice(0, 8);
+  if (!airs.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:30px">No active airdrops. Add one using the form above!</td></tr>';
+    return;
+  }
+  const sbm = { active:'bd-active', farming:'bd-farming', watching:'bd-watching', completed:'bd-completed', expired:'bd-expired' };
+  tbody.innerHTML = airs.map(a => {
+    const dl = dLeft(a.deadline);
+    const dlc = dl !== null && dl <= 3 ? 'var(--red)' : dl !== null && dl <= 7 ? 'var(--orange)' : 'inherit';
+    const dlt = dl === null ? '—' : dl < 0 ? 'Expired' : dl === 0 ? 'Today!' : dl + 'd';
+    return `<tr>
+      <td><strong>${a.name}</strong>${a.investors ? `<br><small style="color:var(--text3);font-size:11px">${a.investors}</small>` : ''}</td>
+      <td><span class="chain-badge">${a.chain}</span></td>
+      <td style="color:${dlc};font-family:var(--font-mono);font-size:12px">${dlt}</td>
+      <td style="color:var(--green);font-family:var(--font-mono);font-size:12px">${a.estValue || '—'}</td>
+      <td style="color:var(--gold)">${'★'.repeat(a.rating || 0)}${'☆'.repeat(5 - (a.rating || 0))}</td>
+      <td><span class="badge ${sbm[a.status] || 'bd-watching'}">${a.status}</span></td>
+      <td style="font-size:13px">${a.postedTw ? '🐦' : ''}${a.postedTg ? ' 📱' : ''}${(!a.postedTw && !a.postedTg) ? '—' : ''}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDeadlines() {
+  const container = el('deadline-list');
+  if (!container) return;
+  const airs = S.arr('airdrops')
+    .filter(a => a.deadline && ['active','farming','watching'].includes(a.status))
+    .sort((a, b) => a.deadline > b.deadline ? 1 : -1)
+    .slice(0, 6);
+  if (!airs.length) { container.innerHTML = '<div class="empty" style="padding:30px 0"><span class="empty-ico">📅</span><div>No upcoming deadlines</div></div>'; return; }
+  container.innerHTML = airs.map(a => {
+    const dl = dLeft(a.deadline);
+    const dlc = dl <= 0 ? 'var(--red)' : dl <= 3 ? 'var(--orange)' : dl <= 7 ? 'var(--gold)' : 'var(--text2)';
+    const dlt = dl < 0 ? 'Expired' : dl === 0 ? 'Today!' : dl + ' days left';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-size:13px;font-weight:600">${a.name}</div>
+        <div style="font-size:11px;color:var(--text3);font-family:var(--font-mono)">${a.chain} · ${fmtD(a.deadline)}</div>
+      </div>
+      <div style="color:${dlc};font-family:var(--font-mono);font-size:12px;font-weight:700">${dlt}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderRecentIncome() {
+  const container = el('recent-income');
+  if (!container) return;
+  const entries = S.arr('income').slice(0, 5);
+  if (!entries.length) { container.innerHTML = '<div style="color:var(--text3);font-size:13px;padding:20px 0;text-align:center">No income logged yet.</div>'; return; }
+  const sL = { airdrop:'🪂',vip:'👑',affiliate:'🔗',sponsor:'📢',pdf:'📄',xrev:'🐦',cmgr:'👥',tools:'🛠️',gas:'⛽',other:'📦' };
+  container.innerHTML = entries.map(i => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-size:13px">${sL[i.source] || '📦'} ${i.notes || i.source}</div>
+        <div style="font-size:11px;color:var(--text3);font-family:var(--font-mono)">${fmtD(i.date)}</div>
+      </div>
+      <div style="font-family:var(--font-mono);font-weight:700;color:${i.type === 'income' ? 'var(--green)' : 'var(--red)'}">${i.type === 'income' ? '+' : '-'}${inr(i.amount)}</div>
+    </div>`).join('');
+}
+
+/* ─── Quick Add ─── */
+function quickAdd() {
+  const name = V('qa-name'); if (!name) { toast('Enter project name!', 'err'); return; }
+  const chain = getChain('qa');
+  const all = S.arr('airdrops');
+  all.unshift({ id: uid(), name, chain, status: el('qa-status').value, deadline: el('qa-dl').value, estValue: V('qa-val'), rating: getStar('qa-stars'), dateAdded: today(), postedTw: false, postedTg: false, postedPdf: false });
+  S.set('airdrops', all);
+  el('qa-name').value = ''; el('qa-val').value = ''; el('qa-dl').value = ''; setStar('qa-stars', 0);
+  toast(name + ' added to tracker!');
+  renderDashAir(); updateDashStats(); renderDeadlines();
+}
+
+/* ═══════════════════════════════════
+   PORTFOLIO
+═══════════════════════════════════ */
+function saveWallet() {
+  const addr = V('w-addr'); if (!addr) { toast('Enter wallet address!', 'err'); return; }
+  const chain = getChain('w'), all = S.arr('wallets');
+  all.unshift({ id: uid(), addr, chain, label: V('w-label') || 'Wallet ' + (all.length + 1), balance: parseFloat(V('w-bal')) || 0, notes: V('w-note'), updated: today() });
+  S.set('wallets', all);
+  ['w-addr', 'w-label', 'w-bal', 'w-note'].forEach(id => el(id).value = '');
+  el('w-cc').style.display = 'none';
+  closeM('walletModal'); toast('Wallet added!');
+  renderWallets(); updateDashStats();
+}
+
+function bulkImportWallets() {
+  const raw = el('bulk-input')?.value || '';
+  const lines = raw.split('\n').map(l => l.trim()).filter(l => l);
+  if (!lines.length) { toast('No data to import!', 'err'); return; }
+  const all = S.arr('wallets');
+  let count = 0;
+  lines.forEach(line => {
+    const parts = line.split('|').map(p => p.trim());
+    if (parts.length >= 2) {
+      all.push({ id: uid(), label: parts[0] || 'Wallet', addr: parts[1] || '', chain: parts[2] || 'Ethereum', balance: parseFloat(parts[3]) || 0, notes: '', updated: today() });
+      count++;
+    }
+  });
+  S.set('wallets', all);
+  el('bulk-input').value = '';
+  closeM('bulkWalletModal');
+  toast(`${count} wallets imported!`);
+  renderWallets(); updateDashStats();
+}
+
+function delWallet(id) {
+  if (!confirm('Remove this wallet?')) return;
+  S.set('wallets', S.arr('wallets').filter(w => w.id !== id));
+  toast('Wallet removed'); renderWallets(); updateDashStats();
+}
+
+function updateBal(id) {
+  const v = parseFloat(prompt('Enter updated balance in USD (get from DeBank.com or Solscan.io):'));
+  if (isNaN(v) || v < 0) return;
+  const all = S.arr('wallets'), i = all.findIndex(w => w.id === id);
+  if (i > -1) { all[i].balance = v; all[i].updated = today(); }
+  S.set('wallets', all); toast('Balance updated!'); renderWallets();
+}
+
+const EXPLORERS = {
+  Ethereum: a => `https://etherscan.io/address/${a}`,
+  Solana: a => `https://solscan.io/account/${a}`,
+  Base: a => `https://basescan.org/address/${a}`,
+  Arbitrum: a => `https://arbiscan.io/address/${a}`,
+  'BNB Chain': a => `https://bscscan.com/address/${a}`,
+  Optimism: a => `https://optimistic.etherscan.io/address/${a}`,
+  Polygon: a => `https://polygonscan.com/address/${a}`,
+  Bitcoin: a => `https://mempool.space/address/${a}`,
+  Avalanche: a => `https://snowtrace.io/address/${a}`,
+};
+
+function renderWallets() {
+  let all = S.arr('wallets');
+
+  // Filter
+  const search = el('port-search')?.value?.toLowerCase() || '';
+  const chainF = el('port-chain-filter')?.value || '';
+  const sortV = el('port-sort')?.value || 'desc';
+
+  if (search) all = all.filter(w => w.label.toLowerCase().includes(search) || w.addr.toLowerCase().includes(search));
+  if (chainF) all = all.filter(w => w.chain === chainF);
+
+  if (sortV === 'desc') all.sort((a, b) => b.balance - a.balance);
+  else if (sortV === 'asc') all.sort((a, b) => a.balance - b.balance);
+
+  const total = S.arr('wallets').reduce((s, w) => s + Number(w.balance || 0), 0);
+  if (el('port-total')) el('port-total').textContent = '$' + total.toFixed(2);
+  if (el('port-inr')) el('port-inr').textContent = '≈ ' + inr(Math.round(total * INR_RATE));
+  if (el('pt-wc')) el('pt-wc').textContent = S.arr('wallets').length;
+  const chains = [...new Set(S.arr('wallets').map(w => w.chain))];
+  if (el('pt-cc')) el('pt-cc').textContent = chains.length;
+  const wc = S.arr('wallets').length;
+  if (el('pt-avg')) el('pt-avg').textContent = '$' + (wc ? (total / wc).toFixed(0) : '0');
+
+  // Chain breakdown
+  const cbd = el('chain-breakdown');
+  if (cbd) {
+    const chainMap = {};
+    S.arr('wallets').forEach(w => { chainMap[w.chain] = (chainMap[w.chain] || 0) + Number(w.balance || 0); });
+    const sorted = Object.entries(chainMap).sort((a, b) => b[1] - a[1]);
+    cbd.innerHTML = sorted.length ? sorted.map(([chain, bal]) => {
+      const pct = total > 0 ? (bal / total * 100).toFixed(1) : 0;
+      return `<div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+          <span><span class="chain-badge">${chain}</span></span>
+          <span style="font-family:var(--font-mono);color:var(--gold)">$${bal.toFixed(2)} <span style="color:var(--text3)">(${pct}%)</span></span>
+        </div>
+        <div class="prog-bg"><div class="prog-fill c" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('') : '<div style="color:var(--text3);font-size:13px">No wallets yet.</div>';
+  }
+
+  const listEl = el('walletList');
+  if (!all.length) {
+    listEl.innerHTML = '<div class="empty"><span class="empty-ico">💼</span><div class="empty-txt">No wallets found.</div><button class="btn btn-gold" onclick="openM(\'walletModal\')">+ Add Your First Wallet</button></div>';
+    return;
+  }
+
+  listEl.innerHTML = all.map(w => {
+    const expUrl = (EXPLORERS[w.chain] || EXPLORERS.Ethereum)(w.addr);
+    return `<div class="wallet-card">
+      <div class="wc-top">
+        <div>
+          <div class="wc-label"><strong>${w.label}</strong><span class="wc-chain">${w.chain}</span></div>
+          <div class="wc-addr">${w.addr}</div>
+          ${w.notes ? `<div style="font-size:12px;color:var(--text3);margin-top:4px">📝 ${w.notes}</div>` : ''}
+          <div style="font-size:11px;color:var(--text3);margin-top:5px;font-family:var(--font-mono)">Updated: ${fmtD(w.updated)}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:4px">Balance</div>
+          <div class="wc-bal">$${Number(w.balance || 0).toFixed(2)}</div>
+          <div class="wc-inr">≈ ${inr(Math.round(Number(w.balance || 0) * INR_RATE))}</div>
+        </div>
+      </div>
+      <div class="wc-actions">
+        <a href="${expUrl}" target="_blank" class="btn btn-cyan btn-sm">🔍 Explorer</a>
+        <a href="https://debank.com/profile/${w.addr}" target="_blank" class="btn btn-outline btn-sm">📊 DeBank</a>
+        <button class="btn btn-outline btn-sm" onclick="updateBal('${w.id}')">✏️ Update Balance</button>
+        <button class="btn btn-danger btn-sm" onclick="delWallet('${w.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════
+   AIRDROP TRACKER
+═══════════════════════════════════ */
+function clearAirForm() {
+  ['af-name','af-url','af-est','af-pay','af-inv','af-act','af-cost','af-time','af-flag','af-notes'].forEach(id => el(id).value = '');
+  el('af-id').value = ''; el('af-dated').value = today();
+  el('af-tw').checked = false; el('af-tg').checked = false; el('af-pdf').checked = false;
+  setStar('af-stars', 0); el('af-cc').style.display = 'none'; el('af-chain').value = 'Solana';
+}
+
+function saveAir() {
+  const name = V('af-name'); if (!name) { toast('Enter project name!', 'err'); return; }
+  const all = S.arr('airdrops'), id = V('af-id'), chain = getChain('af');
+  const item = { id: id || uid(), name, url: V('af-url'), chain, status: el('af-status').value, dateAdded: V('af-dated') || today(), deadline: el('af-dl').value, estValue: V('af-est'), payout: V('af-pay'), investors: V('af-inv'), actions: V('af-act'), cost: V('af-cost'), time: V('af-time'), rating: getStar('af-stars'), flags: V('af-flag'), notes: V('af-notes'), postedTw: el('af-tw').checked, postedTg: el('af-tg').checked, postedPdf: el('af-pdf').checked };
+  if (id) { const i = all.findIndex(a => a.id === id); i > -1 ? all[i] = item : all.unshift(item); }
+  else all.unshift(item);
+  S.set('airdrops', all);
+  closeM('airModal'); toast(name + ' saved!');
+  renderAirs(); renderDashAir(); updateDashStats(); renderDeadlines(); updateAirStats();
+}
+
+function editAir(id) {
+  const a = S.arr('airdrops').find(x => x.id === id); if (!a) return;
+  clearAirForm();
+  el('af-id').value = a.id; el('af-name').value = a.name || ''; el('af-url').value = a.url || '';
+  el('af-est').value = a.estValue || ''; el('af-pay').value = a.payout || '';
+  el('af-inv').value = a.investors || ''; el('af-act').value = a.actions || '';
+  el('af-cost').value = a.cost || ''; el('af-time').value = a.time || '';
+  el('af-flag').value = a.flags || ''; el('af-notes').value = a.notes || '';
+  el('af-dated').value = a.dateAdded || ''; el('af-dl').value = a.deadline || '';
+  el('af-status').value = a.status || 'active';
+  el('af-tw').checked = !!a.postedTw; el('af-tg').checked = !!a.postedTg; el('af-pdf').checked = !!a.postedPdf;
+  setStar('af-stars', a.rating || 0);
+  const sel = el('af-chain');
+  const known = Array.from(sel.options).map(o => o.value);
+  if (known.includes(a.chain)) { sel.value = a.chain; el('af-cc').style.display = 'none'; }
+  else { sel.value = 'Other'; el('af-cc').style.display = 'block'; el('af-cc').value = a.chain || ''; }
+  openM('airModal');
+}
+
+function delAir(id) {
+  if (!confirm('Delete this airdrop?')) return;
+  S.set('airdrops', S.arr('airdrops').filter(a => a.id !== id));
+  toast('Deleted'); renderAirs(); renderDashAir(); updateDashStats(); updateAirStats();
+}
+
+function updateAirStats() {
+  const all = S.arr('airdrops');
+  if (el('as-active')) el('as-active').textContent = all.filter(a => a.status === 'active').length;
+  if (el('as-farming')) el('as-farming').textContent = all.filter(a => a.status === 'farming').length;
+  if (el('as-done')) el('as-done').textContent = all.filter(a => a.status === 'completed').length;
+  const pay = all.filter(a => a.payout).reduce((s, a) => s + Number(a.payout || 0), 0);
+  if (el('as-payout')) el('as-payout').textContent = inr(pay);
+  if (el('air-count-sub')) el('air-count-sub').textContent = `${all.length} total · ${all.filter(a=>['active','farming'].includes(a.status)).length} active`;
+}
+
+function renderAirs() {
+  let all = S.arr('airdrops');
+  const fs = el('f-st')?.value || '';
+  const fc = el('f-ch')?.value || '';
+  const sr = el('f-sr')?.value?.toLowerCase() || '';
+  const rt = el('f-rt')?.value || '';
+  if (fs) all = all.filter(a => a.status === fs);
+  if (fc) all = all.filter(a => a.chain === fc);
+  if (sr) all = all.filter(a => a.name.toLowerCase().includes(sr));
+  if (rt) all = all.filter(a => (a.rating || 0) >= parseInt(rt));
+
+  const tbody = el('air-tbody');
+  if (!all.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:40px">No airdrops found. Add your first!</td></tr>';
+    return;
+  }
+  const sbm = { active:'bd-active', farming:'bd-farming', watching:'bd-watching', completed:'bd-completed', expired:'bd-expired' };
+  tbody.innerHTML = all.map(a => {
+    const dl = dLeft(a.deadline);
+    const dlc = dl !== null && dl < 0 ? 'var(--red)' : dl !== null && dl <= 7 ? 'var(--orange)' : 'inherit';
+    const dlt = dl === null ? '—' : dl < 0 ? 'Expired' : dl === 0 ? 'Today!' : dl + 'd';
+    const ac = a.rating >= 4 ? 'bd-high' : a.rating >= 2 ? 'bd-med' : a.rating ? 'bd-low' : '';
+    return `<tr>
+      <td><strong>${a.name}</strong>${a.url ? `<a href="${a.url}" target="_blank" style="display:block;font-size:11px;color:var(--cyan);margin-top:2px">🔗 site</a>` : ''}${a.investors ? `<div style="font-size:11px;color:var(--text3);margin-top:2px">${a.investors}</div>` : ''}</td>
+      <td><span class="chain-badge">${a.chain}</span></td>
+      <td><span class="badge ${sbm[a.status] || ''}">${a.status}</span></td>
+      <td style="color:${dlc};font-family:var(--font-mono);font-size:12px;white-space:nowrap">${dlt}<div style="font-size:10px;color:var(--text3)">${fmtD(a.deadline)}</div></td>
+      <td style="color:var(--green);font-family:var(--font-mono);font-size:12px">${a.estValue || '—'}</td>
+      <td>${a.rating ? `<span class="badge ${ac}">${'★'.repeat(a.rating)}${'☆'.repeat(5 - a.rating)}</span>` : '—'}</td>
+      <td style="font-family:var(--font-mono);color:var(--gold);font-size:12px">${a.payout ? inr(a.payout) : '—'}</td>
+      <td style="font-size:13px">${a.postedTw ? '🐦' : ''}${a.postedTg ? ' 📱' : ''}${a.postedPdf ? ' 📄' : ''}${!a.postedTw && !a.postedTg && !a.postedPdf ? '—' : ''}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-outline btn-xs" onclick="editAir('${a.id}')" style="margin-right:4px">Edit</button>
+        <button class="btn btn-danger btn-xs" onclick="delAir('${a.id}')">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════
+   CONTENT PLANNER
+═══════════════════════════════════ */
+let ctFilter_val = 'all';
+function ctFilter(tab, el_) {
+  ctFilter_val = tab;
+  document.querySelectorAll('.tab-row .tab-btn').forEach(t => t.classList.remove('active'));
+  el_.classList.add('active');
+  renderCt();
+}
+
+function clearCtForm() {
+  ['cf-topic','cf-hook','cf-pts','cf-proj'].forEach(id => el(id).value = '');
+  el('cf-id').value = ''; el('cf-date').value = today();
+  el('cf-status').value = 'planned'; el('cf-can').value = 'no'; el('cf-prompt').value = '';
+}
+
+function saveCt() {
+  const topic = V('cf-topic'); if (!topic) { toast('Enter a topic!', 'err'); return; }
+  const all = S.arr('content'), id = V('cf-id');
+  const item = { id: id || uid(), date: el('cf-date').value || today(), platform: el('cf-plat').value, type: el('cf-type').value, topic, hook: V('cf-hook'), points: el('cf-pts').value, prompt: el('cf-prompt').value, status: el('cf-status').value, canva: el('cf-can').value, proj: V('cf-proj') };
+  if (id) { const i = all.findIndex(c => c.id === id); i > -1 ? all[i] = item : all.unshift(item); }
+  else all.unshift(item);
+  S.set('content', all);
+  closeM('ctModal'); toast(topic + ' saved!');
+  renderCt(); updateContentStats(); updateDashStats();
+}
+
+function editCt(id) {
+  const c = S.arr('content').find(x => x.id === id); if (!c) return;
+  clearCtForm();
+  el('cf-id').value = c.id; el('cf-date').value = c.date || '';
+  el('cf-plat').value = c.platform || 'twitter'; el('cf-type').value = c.type || 'airdrop';
+  el('cf-topic').value = c.topic || ''; el('cf-hook').value = c.hook || '';
+  el('cf-pts').value = c.points || ''; el('cf-prompt').value = c.prompt || '';
+  el('cf-status').value = c.status || 'planned'; el('cf-can').value = c.canva || 'no'; el('cf-proj').value = c.proj || '';
+  openM('ctModal');
+}
+
+function delCt(id) {
+  if (!confirm('Delete?')) return;
+  S.set('content', S.arr('content').filter(c => c.id !== id));
+  toast('Deleted'); renderCt(); updateContentStats(); updateDashStats();
+}
+
+function updateContentStats() {
+  const all = S.arr('content');
+  const tw = weekDates(0);
+  if (el('cs-planned')) el('cs-planned').textContent = all.filter(c => c.status === 'planned').length;
+  if (el('cs-ready')) el('cs-ready').textContent = all.filter(c => c.status === 'ready').length;
+  if (el('cs-posted')) el('cs-posted').textContent = all.filter(c => c.status === 'posted' && tw.includes(c.date)).length;
+  if (el('cs-tw')) el('cs-tw').textContent = all.filter(c => c.platform === 'twitter' || c.platform === 'both').length;
+}
+
+function renderCt() {
+  let all = S.arr('content');
+  if (ctFilter_val !== 'all') all = all.filter(c => c.status === ctFilter_val);
+  all.sort((a, b) => a.date > b.date ? 1 : -1);
+  const tbody = el('ct-tbody');
+  if (!all.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:40px">No posts yet. Plan your first!</td></tr>'; return; }
+  const pI = { twitter:'🐦', telegram:'📱', both:'🐦📱', pdf:'📄' };
+  const pL = { p1:'#1 Research',p2:'#2 Thread',p3:'#3 Hindi',p4:'#4 TG',p5:'#5 Cal',p6:'#6 Canva',p7:'#7 Scam',p8:'#8 Reply' };
+  const sB = { planned:'📋',writing:'✍️',ready:'✅',posted:'🚀' };
+  const tC = { airdrop:'var(--red)',education:'var(--cyan)',story:'var(--purple)',tips:'var(--gold)',recap:'var(--green)',hindi:'var(--orange)',affiliate:'var(--green)' };
+  tbody.innerHTML = all.map(c => `<tr>
+    <td style="font-family:var(--font-mono);font-size:11px;white-space:nowrap">${fmtD(c.date)}</td>
+    <td style="font-size:15px">${pI[c.platform] || c.platform}</td>
+    <td><span style="font-size:11px;color:${tC[c.type] || 'inherit'};text-transform:capitalize">${c.type}</span></td>
+    <td><strong style="font-size:13px">${c.topic}</strong>${c.proj ? `<div style="font-size:11px;color:var(--text3)">${c.proj}</div>` : ''}</td>
+    <td style="text-align:center">${c.canva === 'yes' ? '✅' : c.canva === 'na' ? 'N/A' : '❌'}</td>
+    <td style="font-size:11px;color:var(--text3);font-family:var(--font-mono)">${pL[c.prompt] || '—'}</td>
+    <td><span style="font-size:13px">${sB[c.status] || ''}</span> <span style="font-size:11px;color:var(--text2)">${c.status}</span></td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-outline btn-xs" onclick="editCt('${c.id}')" style="margin-right:4px">Edit</button>
+      <button class="btn btn-danger btn-xs" onclick="delCt('${c.id}')">✕</button>
+    </td>
+  </tr>`).join('');
+}
+
+/* ═══════════════════════════════════
+   WEEKLY VIEW
+═══════════════════════════════════ */
+let wkOff = 0;
+function renderWeek() {
+  const dates = weekDates(wkOff), days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], todStr = today();
+  const ct = S.arr('content');
+  if (el('wk-label')) el('wk-label').textContent = 'Week of ' + fmtM(dates[0]);
+  const pI = { twitter:'tw', telegram:'tg', both:'tw', pdf:'air' };
+  const grid = el('wk-grid');
+  if (!grid) return;
+  grid.innerHTML = dates.map((d, i) => {
+    const dc = new Date(d), isT = d === todStr;
+    const dayC = ct.filter(c => c.date === d);
+    const def = i < 5 ? ['tw:🐦 Thread','tg:📱 TG ×2','air:🌿 Farm'] : i === 5 ? ['air:🌿 Farm'] : ['air:🌿 Farm','rc:📊 Recap'];
+    return `<div class="day-box${isT ? ' today' : ''}">
+      <div class="day-name">${days[i]}</div>
+      <div class="day-num">${dc.getDate()}</div>
+      ${def.map(t => { const [c, tx] = t.split(':'); return `<div class="day-pill ${c}">${tx}</div>`; }).join('')}
+      ${dayC.map(c => `<div class="day-pill ${pI[c.platform] || 'air'}">${c.topic.slice(0, 12)}…</div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════
+   INCOME
+═══════════════════════════════════ */
+function clearIncForm() {
+  el('if-id').value = ''; el('if-date').value = today();
+  el('if-amt').value = ''; el('if-note').value = '';
+  el('if-type').value = 'income'; el('if-src').value = 'airdrop';
+}
+
+function saveInc() {
+  const amt = parseFloat(V('if-amt')); if (!amt || amt <= 0) { toast('Enter valid amount!', 'err'); return; }
+  const all = S.arr('income');
+  all.unshift({ id: uid(), date: el('if-date').value || today(), type: el('if-type').value, source: el('if-src').value, amount: amt, notes: V('if-note') });
+  S.set('income', all);
+  closeM('incModal'); toast('Entry saved!');
+  renderInc(); updateIncStats(); updateDashStats(); renderRecentIncome();
+}
+
+function delInc(id) {
+  if (!confirm('Delete?')) return;
+  S.set('income', S.arr('income').filter(i => i.id !== id));
+  toast('Deleted'); renderInc(); updateIncStats(); updateDashStats();
+}
+
+function renderInc() {
+  const all = S.arr('income'), tbody = el('inc-tbody');
+  if (!all.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:40px">No entries yet.</td></tr>'; return; }
+  const sL = { airdrop:'🪂 Airdrop',vip:'👑 VIP TG',affiliate:'🔗 Affiliate',sponsor:'📢 Sponsor',pdf:'📄 PDF',xrev:'🐦 X Revenue',cmgr:'👥 Comm. Mgr',tools:'🛠️ Tools',gas:'⛽ Gas',other:'📦 Other' };
+  tbody.innerHTML = all.map(i => `<tr>
+    <td style="font-family:var(--font-mono);font-size:11px">${fmtD(i.date)}</td>
+    <td><span style="color:${i.type === 'income' ? 'var(--green)' : 'var(--red)'}">${i.type === 'income' ? '💚 Income' : '🔴 Expense'}</span></td>
+    <td>${sL[i.source] || i.source}</td>
+    <td style="font-family:var(--font-mono);font-weight:700;color:${i.type === 'income' ? 'var(--green)' : 'var(--red)'}">${i.type === 'income' ? '+' : '-'}${inr(i.amount)}</td>
+    <td style="font-size:12px;color:var(--text2)">${i.notes || '—'}</td>
+    <td><button class="btn btn-danger btn-xs" onclick="delInc('${i.id}')">✕</button></td>
+  </tr>`).join('');
+}
+
+function updateIncStats() {
+  const all = S.arr('income'), mon = new Date().toISOString().slice(0, 7);
+  const ti = all.filter(i => i.type === 'income').reduce((s, i) => s + Number(i.amount), 0);
+  const mi = all.filter(i => i.type === 'income' && i.date.startsWith(mon)).reduce((s, i) => s + Number(i.amount), 0);
+  const te = all.filter(i => i.type === 'expense').reduce((s, i) => s + Number(i.amount), 0);
+  const net = ti - te;
+  if (el('is-tot')) el('is-tot').textContent = inr(ti);
+  if (el('is-mon')) el('is-mon').textContent = inr(mi);
+  if (el('is-exp')) el('is-exp').textContent = inr(te);
+  const ne = el('is-net');
+  if (ne) { ne.textContent = inr(Math.abs(net)); ne.style.color = net >= 0 ? 'var(--green)' : 'var(--red)'; }
+}
+
+/* ═══════════════════════════════════
+   NOTES
+═══════════════════════════════════ */
+function addNote() {
+  const title = V('n-t'); if (!title) { toast('Enter a title!', 'err'); return; }
+  const all = S.arr('notes');
+  all.unshift({ id: uid(), title, cat: el('n-c').value, body: el('n-b').value, date: today() });
+  S.set('notes', all);
+  el('n-t').value = ''; el('n-b').value = '';
+  toast('Note saved!'); renderNotes();
+}
+
+function delNote(id) {
+  if (!confirm('Delete?')) return;
+  S.set('notes', S.arr('notes').filter(n => n.id !== id));
+  toast('Deleted'); renderNotes();
+}
+
+function renderNotes() {
+  const all = S.arr('notes'), container = el('notes-grid');
+  if (!container) return;
+  if (!all.length) { container.innerHTML = '<div class="empty"><span class="empty-ico">💡</span><div class="empty-txt">No notes yet. Capture your first idea!</div></div>'; return; }
+  const cC = { idea:'var(--gold)', project:'var(--cyan)', strategy:'var(--purple)', learn:'var(--green)', reminder:'var(--red)' };
+  const cI = { idea:'💡', project:'🪂', strategy:'🎯', learn:'📚', reminder:'⏰' };
+  container.innerHTML = all.map(n => `<div class="note-card" style="border-left-color:${cC[n.cat] || 'var(--gold)'}">
+    <div class="note-card-hdr">
+      <div class="note-card-title">${cI[n.cat] || '💡'} ${n.title}</div>
+      <button class="btn btn-danger btn-xs" onclick="delNote('${n.id}')">✕</button>
+    </div>
+    <div class="note-card-meta" style="color:${cC[n.cat] || 'var(--gold)'}">${n.cat.toUpperCase()} · ${fmtD(n.date)}</div>
+    ${n.body ? `<div class="note-card-body">${n.body}</div>` : ''}
+  </div>`).join('');
+}
+
+/* ═══════════════════════════════════
+   WEEKLY REVIEW
+═══════════════════════════════════ */
+function saveReview() {
+  const all = S.arr('reviews');
+  all.unshift({ id: uid(), weekof: V('rv-wk') || today(), tw: V('rv-tw'), tg: V('rv-tg'), twf: V('rv-twf'), tgm: V('rv-tgm'), farmed: V('rv-far'), inc: V('rv-inc'), best: V('rv-best'), imp: V('rv-imp'), worked: el('rv-wk2').value, challenges: el('rv-ch').value, prio: el('rv-pr').value, mood: getStar('rv-mood') });
+  S.set('reviews', all); toast('Review saved!'); renderReviews();
+}
+
+function delRv(id) {
+  if (!confirm('Delete?')) return;
+  S.set('reviews', S.arr('reviews').filter(r => r.id !== id));
+  toast('Deleted'); renderReviews();
+}
+
+function renderReviews() {
+  const all = S.arr('reviews'), container = el('past-rv');
+  if (!container) return;
+  if (!all.length) { container.innerHTML = '<div class="empty"><span class="empty-ico">📊</span><div>No reviews yet.</div></div>'; return; }
+  const me = ['','😞','😐','🙂','😊','🔥'];
+  container.innerHTML = all.map(r => `<div class="rv-card">
+    <div class="rv-card-hdr">
+      <div>
+        <strong style="color:var(--gold);font-family:var(--font-mono)">${fmtD(r.weekof)}</strong>
+        <div class="rv-metrics" style="margin-top:8px;margin-bottom:0">
+          <span class="rv-metric">🐦 <span>${r.tw || 0}</span> posts</span>
+          <span class="rv-metric">📱 <span>${r.tg || 0}</span> TG posts</span>
+          <span class="rv-metric">🪂 <span>${r.farmed || 0}</span> farmed</span>
+          <span class="rv-metric">💰 <span>${inr(r.inc || 0)}</span></span>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <span style="font-size:24px">${me[r.mood || 0]}</span>
+        <button class="btn btn-danger btn-xs" onclick="delRv('${r.id}')">✕</button>
+      </div>
+    </div>
+    ${r.worked ? `<div style="margin-bottom:10px"><div style="font-size:10px;color:var(--green);letter-spacing:1px;font-family:var(--font-mono);margin-bottom:3px">✅ WHAT WORKED</div><div style="font-size:13px;color:var(--text2)">${r.worked}</div></div>` : ''}
+    ${r.challenges ? `<div style="margin-bottom:10px"><div style="font-size:10px;color:var(--red);letter-spacing:1px;font-family:var(--font-mono);margin-bottom:3px">⚠️ CHALLENGES</div><div style="font-size:13px;color:var(--text2)">${r.challenges}</div></div>` : ''}
+    ${r.prio ? `<div><div style="font-size:10px;color:var(--cyan);letter-spacing:1px;font-family:var(--font-mono);margin-bottom:3px">🎯 NEXT WEEK</div><div style="font-size:13px;color:var(--text2);white-space:pre-line">${r.prio}</div></div>` : ''}
+  </div>`).join('');
+}
+
+/* ═══════════════════════════════════
+   AI PROMPT LIBRARY
+═══════════════════════════════════ */
+const PROMPTS = [
+  {
+    id:'p1', num:'#1', title:'Airdrop Deep Research', badge:'Research',
+    desc:'Researches any airdrop project in depth before you post about it.',
+    prompt:`I am a crypto airdrop farming influencer in India. Research the airdrop project called [PROJECT NAME] and give me:
+1. What exactly the project does (simple explanation)
+2. Which blockchain it uses and why
+3. Who the investors / backers are
+4. What actions I need to do to qualify for the airdrop
+5. Estimated token value / market cap when it launches
+6. Is this project legitimate? Red flags or green flags?
+7. Summary: Worth farming YES/NO and why?
+
+Format everything clearly so I can quickly decide if I should write a Twitter thread about it.`
+  },
+  {
+    id:'p2', num:'#2', title:'Twitter Thread Generator', badge:'Twitter',
+    desc:'Writes a complete, engaging Twitter thread in your voice.',
+    prompt:`You are a crypto content writer for an Indian influencer who teaches people about airdrops on Twitter. Write a detailed Twitter thread about the [PROJECT NAME] airdrop. 
+
+Thread structure:
+Tweet 1: 🚨 Hook - attention-grabbing opening with key stat or deadline
+Tweet 2: What is [PROJECT NAME] in 2 sentences?
+Tweet 3: Why is it legitimate? (investors, team, technology)
+Tweet 4: Step-by-step guide to farm the airdrop (numbered list)
+Tweet 5: Estimated value and why now is the best time
+Tweet 6: Scam warning - what to watch out for
+Tweet 7: CTA - follow me + join my Telegram channel
+
+Rules:
+- Each tweet must be under 280 characters
+- Use emojis naturally
+- Write in English
+- Sound like a trusted crypto friend, not a salesman
+- Number each tweet [1/7], [2/7] etc.`
+  },
+  {
+    id:'p3', num:'#3', title:'Hindi Airdrop Post', badge:'Hindi 🇮🇳',
+    desc:'Writes Hindi content for your Indian audience on Telegram.',
+    prompt:`Mujhe ek crypto airdrop ke baare mein Hindi mein ek informative Telegram post likhna hai. Project ka naam hai [PROJECT NAME].
+
+Post mein yeh shamil karo:
+1. Project kya hai (simple Hindi mein)
+2. Airdrop kaise milega - step by step guide
+3. Kitne tokens milenge aur unki value kya ho sakti hai
+4. Kab tak karna hai (deadline)
+5. Scam se bachne ke tips
+6. Mere Telegram channel ko join karne ka CTA
+
+Tone: Friendly, trustworthy, aam aadmi ki language mein. Emojis use karo.`
+  },
+  {
+    id:'p4', num:'#4', title:'Telegram Post Generator', badge:'Telegram',
+    desc:'Creates an optimized Telegram-style post (longer, with all details).',
+    prompt:`Write a comprehensive Telegram post about the [PROJECT NAME] airdrop for my Indian crypto farming community. 
+
+Format:
+📌 PROJECT NAME — [Project Name]
+🔗 Chain: [Blockchain]
+⏰ Deadline: [Date]
+💰 Est. Value: [Value]
+
+🔍 WHAT IS IT?
+[2-3 sentences explaining the project]
+
+✅ HOW TO FARM:
+[Numbered step-by-step guide]
+
+🏆 WHY IT'S LEGIT:
+[2-3 reasons]
+
+⚠️ SCAM CHECK:
+[What to watch out for]
+
+💡 MY TAKE:
+[Personal opinion - is it worth farming?]
+
+Join my channel for daily airdrops: [your channel link]
+
+Make the post detailed but easy to follow. Use emojis for each section.`
+  },
+  {
+    id:'p5', num:'#5', title:'7-Day Content Calendar', badge:'Planning',
+    desc:'Plans your full week of Twitter + Telegram posts.',
+    prompt:`Create a 7-day content calendar for a crypto airdrop farming influencer in India. I post on Twitter and Telegram every day.
+
+My niche: Airdrop farming, Web3 education, crypto tips for Indians
+
+This week's theme: [e.g., "Top 5 Solana Airdrops" or "DeFi Basics"]
+
+For each day, give me:
+- Twitter thread topic and hook tweet
+- 2 Telegram post ideas (one in English, one concept for Hindi)
+- Best time to post for Indian audience (IST)
+
+Mix of content types:
+- Airdrop alerts (40%)
+- Education threads (30%)
+- Personal story / journey (15%)
+- Tips and tricks (15%)
+
+Format as a clean table: Day | Twitter | Telegram 1 | Telegram 2 | Post Time`
+  },
+  {
+    id:'p6', num:'#6', title:'Canva Design Brief', badge:'Design',
+    desc:'Gives your Canva graphic designer the exact brief for your post image.',
+    prompt:`Create a detailed Canva design brief for a Twitter/Telegram post graphic about [PROJECT NAME] airdrop.
+
+Include:
+1. Headline text (short, punchy, under 8 words)
+2. Subheading text (one line with key info like value + deadline)
+3. Color scheme suggestion (based on project's brand colors)
+4. Key icons or elements to include
+5. Layout recommendation (vertical 1080x1920 for Telegram, or square 1080x1080 for Twitter)
+6. CTA text at the bottom ("Join my Telegram: @yourhandle")
+7. Any logos or badges to include (chain logo, project logo if available)
+
+Make it eye-catching and trustworthy-looking. Our brand color is gold/yellow on dark background.`
+  },
+  {
+    id:'p7', num:'#7', title:'Scam Check Analysis', badge:'Safety ⚠️',
+    desc:'Analyzes any project for scam signals before you promote it.',
+    prompt:`Analyze the following crypto project for scam signals. I need to know if this is safe to promote to my audience before I write about it.
+
+Project: [PROJECT NAME]
+Website: [URL]
+Claim: They are offering a [X] token airdrop
+
+Analyze these factors:
+1. Team transparency (anonymous or public?)
+2. Social media presence and age of accounts
+3. GitHub activity (if open source)
+4. Investor credibility (are backers real?)
+5. Token distribution (is it fair?)
+6. Website quality and WHOIS data
+7. Audit status (smart contract audited?)
+8. Community size and engagement quality
+9. Promises vs reality (are claims realistic?)
+10. Similar scam patterns in the past
+
+Output: 
+- SCAM RISK: LOW / MEDIUM / HIGH
+- CONFIDENCE: [1-10]
+- VERDICT: [One paragraph recommendation]
+- RED FLAGS: [List any concerns]
+- GREEN FLAGS: [List positive signals]`
+  },
+  {
+    id:'p8', num:'#8', title:'Engagement Reply Generator', badge:'Engagement',
+    desc:'Writes 10 smart replies to big crypto accounts to boost your visibility.',
+    prompt:`I am a crypto influencer who focuses on airdrop farming in India. I want to grow my Twitter following by replying to big crypto accounts.
+
+Write me 10 different reply templates I can use this week for different scenarios:
+
+1. Reply to a project announcing their airdrop
+2. Reply to a crypto influencer sharing market news
+3. Reply to someone asking "how to start in crypto?"
+4. Reply to a thread about DeFi basics
+5. Reply to someone asking about best airdrops
+6. Reply to negative crypto sentiment (FUD)
+7. Reply to a Solana ecosystem news post
+8. Reply to someone who just had their first airdrop
+9. Reply to a post about crypto regulations in India
+10. Reply to any viral crypto meme
+
+Rules for each reply:
+- Under 280 characters
+- Add value or insight
+- Subtly mention my niche (Indian airdrop farmer)
+- End with something that invites engagement
+- Sound genuine, not spammy`
+  }
+];
+
+function buildPrompts() {
+  const container = el('prompt-list');
+  if (!container) return;
+  const bC = { Research:'bd-active', Twitter:'bd-farming', 'Hindi 🇮🇳':'bd-med', Telegram:'bd-cyan', Planning:'bd-high', 'Design':'bd-active', 'Safety ⚠️':'bd-low', Engagement:'bd-farming' };
+  container.innerHTML = PROMPTS.map(p => `
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-hdr">
+        <div class="card-title">
+          <span style="color:var(--text3);font-family:var(--font-mono);font-size:14px">${p.num}</span>
+          ${p.title}
+          <span class="badge ${bC[p.badge] || 'bd-active'}">${p.badge}</span>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="copyPrompt('${p.id}')">📋 Copy Prompt</button>
+      </div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:14px">${p.desc}</div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:16px;font-family:var(--font-mono);font-size:12px;color:var(--text2);line-height:1.8;white-space:pre-wrap;max-height:200px;overflow-y:auto" id="ptext-${p.id}">${p.prompt}</div>
+    </div>
+  `).join('');
+}
+
+function copyPrompt(id) {
+  const p = PROMPTS.find(x => x.id === id);
+  if (!p) return;
+  navigator.clipboard.writeText(p.prompt).then(() => {
+    toast('Prompt #' + p.num.replace('#','') + ' copied! Paste into Claude or ChatGPT.', 'info');
+  }).catch(() => {
+    const t = el('ptext-' + id);
+    if (t) { const r = document.createRange(); r.selectNode(t); window.getSelection().removeAllRanges(); window.getSelection().addRange(r); }
+    toast('Select + copy the text above', 'info');
+  });
+}
+</script>
 </body>
 </html>
